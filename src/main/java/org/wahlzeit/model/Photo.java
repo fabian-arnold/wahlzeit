@@ -111,7 +111,13 @@ public class Photo extends DataObject {
 	protected int praiseSum = 10;
 	protected int noVotes = 1;
 	protected int noVotesAtLastNotification = 1;
-	
+
+
+	/**
+	 *
+	 */
+	protected Location location;
+
 	/**
 	 *
 	 */
@@ -417,5 +423,24 @@ public class Photo extends DataObject {
 	public void setNoNewPraise() {
 		noVotesAtLastNotification = noVotes;
 		incWriteCount();
+	}
+
+	/**
+	 * Gets the Location of the Photo
+	 * @return Location of the Photo
+	 */
+	public Location getLocation() {
+		return location;
+	}
+
+	/**
+	 * Sets the Location of the Photo
+	 * @param location new Location
+	 */
+	public void setLocation(Location location) {
+		if(location == null){
+			throw new IllegalArgumentException("Cannot set null as Location");
+		}
+		this.location = location;
 	}
 }
