@@ -58,7 +58,7 @@ public abstract class AbstractEmailService implements EmailService {
             MailingException {
         assertIsValidEmailAddress(from, "from");
         assertIsValidEmailAddress(to, "to");
-        if (bcc != null) {
+        if (bcc != null && bcc != EmailAddress.EMPTY) {
             assertIsValidEmailAddress(bcc, "bcc");
         }
         assertIsValidString(subject, "subject");
