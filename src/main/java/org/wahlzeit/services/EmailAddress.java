@@ -116,7 +116,7 @@ public class EmailAddress implements Serializable {
 	 */
 
 	public boolean isValid() {
-		return !isEmpty();
+		return !isEmpty() && value.contains("@");
 	}
 
 	/**
