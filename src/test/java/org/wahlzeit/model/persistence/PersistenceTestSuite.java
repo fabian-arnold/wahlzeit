@@ -5,8 +5,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        AbstractAdapterTest.class,
-        DatastoreAdapterTest.class
+    DatastoreAdapterTest.class
 })
 public class PersistenceTestSuite {
+
 }
