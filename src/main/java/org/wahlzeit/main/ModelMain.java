@@ -20,6 +20,8 @@
 
 package org.wahlzeit.main;
 
+import org.wahlzeit.model.CheesefoodPhotoFactory;
+import org.wahlzeit.model.CheesefoodPhotoManager;
 import org.wahlzeit.model.GlobalsManager;
 import org.wahlzeit.model.PhotoCaseManager;
 import org.wahlzeit.model.PhotoFactory;
@@ -62,8 +64,14 @@ public abstract class ModelMain extends AbstractMain {
 		log.config(LogBuilder.createSystemMessage().addAction("init PhotoFactory").toString());
 		PhotoFactory.initialize();
 
+		log.config(LogBuilder.createSystemMessage().addAction("init CheesefoodPhotoFactory").toString());
+		CheesefoodPhotoFactory.initialize();
+
 		log.config(LogBuilder.createSystemMessage().addAction("load Photos").toString());
 		PhotoManager.getInstance().init();
+
+		log.config(LogBuilder.createSystemMessage().addAction("load cheesefood Photos").toString());
+		CheesefoodPhotoManager.getInstance().init();
 	}
 
 
