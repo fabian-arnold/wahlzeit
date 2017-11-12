@@ -175,6 +175,7 @@ public class Coordinate {
         return Double.compare(that.z, z) == 0;
     }
 
+
     /**
      * Calculates an hash for every coordinate.
      * The hash is equal if all components are equal.
