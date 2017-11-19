@@ -124,10 +124,7 @@ public class SphericCoordinate implements Coordinate {
     ParameterUtil.assertNotNull(start, "from");
     ParameterUtil.assertNotNull(end, "end");
 
-    /*
-     the calculation in spherical coordinates is very very complicated so i think the best way to do
-     this is to convert our coordinates to cartesian coordinates and then calculate the distance.
-     */
+    // formula from: http://mathforum.org/kb/message.jspa?messageID=7318102
 
     double r1 = start.getRadius();
     double r2 = end.getRadius();

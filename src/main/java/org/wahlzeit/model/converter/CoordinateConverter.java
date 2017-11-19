@@ -162,11 +162,11 @@ public class CoordinateConverter {
     // These should register by itself but this is to much for now.
     if (targetClass.equals(SphericCoordinate.class) && coordinate instanceof CartesianCoordinate) {
       // we have a cartesian coordinate and want to convert it to a spheric
-      return (T) convertToSpheric((CartesianCoordinate) coordinate);
+      return (T) impl_convertToSpheric((CartesianCoordinate) coordinate);
     }
     if (targetClass.equals(CartesianCoordinate.class) && coordinate instanceof SphericCoordinate) {
       // we have a cartesian coordinate and want to convert it to a spheric
-      return (T) convertToCartesian((SphericCoordinate) coordinate);
+      return (T) impl_convertToCartesian((SphericCoordinate) coordinate);
     }
     return null;
   }
