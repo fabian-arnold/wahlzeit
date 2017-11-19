@@ -1,5 +1,8 @@
 package org.wahlzeit.model;
 
+import com.googlecode.objectify.annotation.Subclass;
+
+@Subclass()
 public class CheesefoodPhoto extends Photo {
 
   // Stores if the photo represents a cookable food
