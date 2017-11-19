@@ -3,7 +3,7 @@ package org.wahlzeit.model;
 /**
  * A coordinate which is nowhere and can never be reached
  */
-public class NoWhereCoordinate extends Coordinate {
+public class NoWhereCoordinate implements Coordinate {
 
     private static final int NOWHERE_HASH_CODE = 948234134;
 
@@ -14,37 +14,11 @@ public class NoWhereCoordinate extends Coordinate {
 
     }
 
-
-    @Override
-    public double getX() {
-        return Double.NaN;
-    }
-
-    @Override
-    public void setX(double x) {
-
-    }
-
-    @Override
-    public double getY() {
-        return Double.NaN;
-    }
-
-    @Override
-    public void setY(double y) {
-
-    }
-
-    @Override
-    public double getZ() {
-        return Double.NaN;
-    }
-
-    @Override
-    public void setZ(double z) {
-
-    }
-
+    /**
+     * Calculates the distance to target.
+     * Returns always the positive infinity
+     * @param target The target the distance to is calculated
+     */
     @Override
     public double getDistance(Coordinate target) {
         // nowhere is infinite far away we could use the implementation

@@ -20,18 +20,18 @@ public class Location {
     }
 
     /**
-     * Create a location by given {@link Coordinate}
+     * Create a location by given {@link CartesianCoordinate}
      *
-     * @param coordinate {@link Coordinate} of the location
+     * @param coordinate {@link CartesianCoordinate} of the location
      */
     public Location(Coordinate coordinate) {
         this.coordinate = coordinate;
     }
 
     /**
-     * Gets the {@link Coordinate} of the location
+     * Gets the {@link CartesianCoordinate} of the location
      *
-     * @return Coordinate of the Location
+     * @return CartesianCoordinate of the Location
      */
     public Coordinate getCoordinate() {
         return coordinate;

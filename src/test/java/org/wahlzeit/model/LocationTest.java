@@ -8,7 +8,7 @@ public class LocationTest {
     @Test
     public void testLocation() {
         Location location = new Location();
-        Coordinate zeroLocationCoord = new Coordinate();
+        Coordinate zeroLocationCoord = new CartesianCoordinate();
 
         // test the empty construtor
         Assert.assertTrue(location.getCoordinate() instanceof NoWhereCoordinate);
