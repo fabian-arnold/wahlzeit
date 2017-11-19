@@ -17,32 +17,32 @@ public class NoWhereCoordinate extends Coordinate {
 
     @Override
     public double getX() {
-        throw new UnsupportedOperationException("cannot get x of nowhere");
+        return Double.NaN;
     }
 
     @Override
     public void setX(double x) {
-        throw new UnsupportedOperationException("cannot set x of nowhere");
+
     }
 
     @Override
     public double getY() {
-        throw new UnsupportedOperationException("cannot get y of nowhere");
+        return Double.NaN;
     }
 
     @Override
     public void setY(double y) {
-        throw new UnsupportedOperationException("cannot set y of nowhere");
+
     }
 
     @Override
     public double getZ() {
-        throw new UnsupportedOperationException("cannot get z of nowhere");
+        return Double.NaN;
     }
 
     @Override
     public void setZ(double z) {
-        throw new UnsupportedOperationException("cannot set z of nowhere");
+
     }
 
     @Override
