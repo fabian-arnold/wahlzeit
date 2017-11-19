@@ -128,10 +128,18 @@ public class SphericCoordinate implements Coordinate {
      the calculation in spherical coordinates is very very complicated so i think the best way to do
      this is to convert our coordinates to cartesian coordinates and then calculate the distance.
      */
-    CartesianCoordinate cStart = CoordinateConverter.convertToCartesian(start);
-    CartesianCoordinate cEnd = CoordinateConverter.convertToCartesian(end);
 
-    return CartesianCoordinate.distance(cStart, cEnd);
+    double r1 = start.getRadius();
+    double r2 = end.getRadius();
+    double la1 = Math.toRadians(start.getLatitude());
+    double la2 = Math.toRadians(end.getLatitude());
+    double lo1 = Math.toRadians(start.getLongitude());
+    double lo2 = Math.toRadians(end.getLongitude());
+
+    double d = Math.sqrt(
+        r1 * r1 + r2 * r2 - 2 * r1 * r2 * Math.cos(la1) * Math.cos(la2) * Math.cos(lo1 - lo2) -
+            2 * r1 * r2 * Math.sin(la1) * Math.sin(la2));
+    return d;
   }
 
   @Override
