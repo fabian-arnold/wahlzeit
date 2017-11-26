@@ -207,10 +207,10 @@ public class CartesianCoordinateTest {
         Assert.assertEquals(reference.getDistance(coordinate4), coordinate4.getDistance(reference), EPSILON);
 
         // test the static implementation
-        Assert.assertEquals(CartesianCoordinate.distance(reference, coordinate1), reference.getDistance(coordinate1), EPSILON);
-        Assert.assertEquals(CartesianCoordinate.distance(reference, coordinate2), reference.getDistance(coordinate2), EPSILON);
-        Assert.assertEquals(CartesianCoordinate.distance(reference, coordinate3), reference.getDistance(coordinate3), EPSILON);
-        Assert.assertEquals(CartesianCoordinate.distance(reference, coordinate4), reference.getDistance(coordinate4), EPSILON);
+        Assert.assertEquals(DistanceCalculator.cartesianDistance(reference, coordinate1), reference.getDistance(coordinate1), EPSILON);
+        Assert.assertEquals(DistanceCalculator.cartesianDistance(reference, coordinate2), reference.getDistance(coordinate2), EPSILON);
+        Assert.assertEquals(DistanceCalculator.cartesianDistance(reference, coordinate3), reference.getDistance(coordinate3), EPSILON);
+        Assert.assertEquals(DistanceCalculator.cartesianDistance(reference, coordinate4), reference.getDistance(coordinate4), EPSILON);
 
         // check the distance to the point it self
         Assert.assertEquals(reference.getDistance(reference), 0, EPSILON);

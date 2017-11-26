@@ -6,7 +6,7 @@ import org.wahlzeit.utils.ParameterUtil;
 /**
  * Represents a generic spheric coordinate
  */
-public class SphericCoordinate implements Coordinate {
+public class SphericCoordinate extends AbstractCoordinate {
 
   /**
    * Stores the latitude of the coordinate
@@ -109,39 +109,6 @@ public class SphericCoordinate implements Coordinate {
   public void setRadius(double radius) {
     ParameterUtil.assertNumberInRange(radius, 0.0, Double.POSITIVE_INFINITY, "radius");
     this.radius = radius;
-  }
-
-  /**
-   * Calculates the distance in km from the center of start to the center of end
-   *
-   * @param start coordinate
-   * @param end coordinate
-   * @return distance in km
-   * @see CartesianCoordinate#distance(CartesianCoordinate, CartesianCoordinate)
-   * @see SphericCoordinate#getDistance(Coordinate)
-   */
-  public static double distance(SphericCoordinate start, SphericCoordinate end) {
-    ParameterUtil.assertNotNull(start, "from");
-    ParameterUtil.assertNotNull(end, "end");
-
-    // formula from: http://mathforum.org/kb/message.jspa?messageID=7318102
-
-    double r1 = start.getRadius();
-    double r2 = end.getRadius();
-    double la1 = Math.toRadians(start.getLatitude());
-    double la2 = Math.toRadians(end.getLatitude());
-    double lo1 = Math.toRadians(start.getLongitude());
-    double lo2 = Math.toRadians(end.getLongitude());
-
-    double d = Math.sqrt(
-        r1 * r1 + r2 * r2 - 2 * r1 * r2 * Math.cos(la1) * Math.cos(la2) * Math.cos(lo1 - lo2) -
-            2 * r1 * r2 * Math.sin(la1) * Math.sin(la2));
-    return d;
-  }
-
-  @Override
-  public double getDistance(Coordinate target) {
-    return distance(this, CoordinateConverter.convertTo(target, SphericCoordinate.class));
   }
 
   @Override

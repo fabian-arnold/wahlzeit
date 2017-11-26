@@ -3,7 +3,7 @@ package org.wahlzeit.model;
 /**
  * A coordinate which is nowhere and can never be reached
  */
-public class NoWhereCoordinate implements Coordinate {
+public class NoWhereCoordinate extends AbstractCoordinate {
 
     private static final int NOWHERE_HASH_CODE = 948234134;
 

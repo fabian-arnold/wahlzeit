@@ -18,9 +18,7 @@ public interface Coordinate {
    * @see CoordinateConverter#convertTo(Coordinate, Class)
    * @see CartesianCoordinate
    */
-  default CartesianCoordinate asCartesianCoordinate() {
-    return CoordinateConverter.convertTo(this, CartesianCoordinate.class);
-  }
+  CartesianCoordinate asCartesianCoordinate();
 
   /**
    * Calculates the cartesian distance from instance to target.
@@ -28,15 +26,7 @@ public interface Coordinate {
    * @param target coordinate
    * @return distance to target
    */
-  default double getCartesianDistance(Coordinate target) {
-
-    // handle the special case when target is a NoWhereCoordinate
-    if (target instanceof NoWhereCoordinate) {
-      return Double.POSITIVE_INFINITY;
-    }
-
-    return asCartesianCoordinate().getDistance(target);
-  }
+  double getCartesianDistance(Coordinate target);
 
   /**
    * Uses the {@link CoordinateConverter} to convert the current instance to an {@link
@@ -47,9 +37,7 @@ public interface Coordinate {
    * @see CoordinateConverter#convertTo(Coordinate, Class)
    * @see SphericCoordinate
    */
-  default SphericCoordinate asSphericCoordinate() {
-    return CoordinateConverter.convertTo(this, SphericCoordinate.class);
-  }
+  SphericCoordinate asSphericCoordinate();
 
   /**
    * Calculates the spherical distance from instance to target
@@ -57,15 +45,7 @@ public interface Coordinate {
    * @param target coordinate
    * @return distance to target
    */
-  default double getSphericalDistance(Coordinate target) {
-
-    // handle the special case when target is a NoWhereCoordinate
-    if (target instanceof NoWhereCoordinate) {
-      return Double.POSITIVE_INFINITY;
-    }
-
-    return asSphericCoordinate().getDistance(target);
-  }
+  double getSphericalDistance(Coordinate target);
 
   /**
    * Calculates the distance from instance to target
@@ -80,8 +60,6 @@ public interface Coordinate {
    * @param other to compare
    * @return true if given objects are equal
    */
-  default boolean isEqual(Coordinate other) {
-    return this.equals(other);
-  }
+  boolean isEqual(Coordinate other);
 
 }
