@@ -126,7 +126,7 @@ public class CheesefoodPhoto extends Photo {
    * @methodtype set
    */
   public void setDifficulty(Integer difficulty) {
-    if (difficulty < 1 || difficulty > 6) {
+    if (difficulty != null && (difficulty < 1 || difficulty > 6)) {
       throw new IllegalArgumentException("difficulty out of range");
     }
     this.difficulty = difficulty;
