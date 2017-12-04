@@ -103,7 +103,9 @@ public class CoordinateConverter {
     double latitude = Math.toDegrees(Math.asin(cartesianCoordinate.getY() / radius));
     double longitude = Math
         .toDegrees(Math.atan2(cartesianCoordinate.getX(), -cartesianCoordinate.getZ()));
+
     sphericCoordinate = new SphericCoordinate(latitude, longitude, radius);
+
     return sphericCoordinate;
   }
 
@@ -139,6 +141,12 @@ public class CoordinateConverter {
     T x = impl_convertTo(coordinate, targetClass);
 
     if (x != null) {
+      // we suppress unchecked warning so manually check the return type
+      if (!(targetClass.isInstance(x))) {
+        throw new IllegalStateException("There happend an internal error during conversion to " +
+            targetClass.getSimpleName());
+      }
+
       return x;
     }
 
