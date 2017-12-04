@@ -11,7 +11,7 @@ public class DistanceCalculator {
   /**
    * Prevent instantiation of class
    */
-  private DistanceCalculator(){
+  private DistanceCalculator() {
 
   }
 
@@ -20,7 +20,7 @@ public class DistanceCalculator {
    *
    * @param start Start coordinate
    * @param end End coordinate
-   * @return the distance
+   * @return the distance in km
    * @see DistanceCalculator#sphericDistance(SphericCoordinate, SphericCoordinate)
    * @see CartesianCoordinate#getDistance(Coordinate)
    * @see SphericCoordinate#getDistance(Coordinate)
@@ -43,7 +43,14 @@ public class DistanceCalculator {
     double distanceY_2 = distanceY * distanceY;
     double distanceZ_2 = distanceZ * distanceZ;
 
-    return Math.sqrt(distanceX_2 + distanceY_2 + distanceZ_2);
+    double distance = Math.sqrt(distanceX_2 + distanceY_2 + distanceZ_2);
+
+    // check if we were able to calculate a valid distance
+    if(distance == Double.NaN){
+      throw new IllegalStateException("There happened an error during distance calculation.");
+    }
+
+    return distance;
   }
 
   /**
@@ -69,10 +76,16 @@ public class DistanceCalculator {
     double lo1 = Math.toRadians(start.getLongitude());
     double lo2 = Math.toRadians(end.getLongitude());
 
-    double d = Math.sqrt(
+    double distance = Math.sqrt(
         r1 * r1 + r2 * r2 - 2 * r1 * r2 * Math.cos(la1) * Math.cos(la2) * Math.cos(lo1 - lo2) -
             2 * r1 * r2 * Math.sin(la1) * Math.sin(la2));
-    return d;
+
+    // check if we were able to calculate a valid distance
+    if(distance == Double.NaN){
+      throw new IllegalStateException("There happened an error during distance calculation.");
+    }
+
+    return distance;
   }
 
 }

@@ -95,7 +95,7 @@ public class SphericCoordinate extends AbstractCoordinate {
   /**
    * Returns the radius of the coordinate
    *
-   * @return radius of the coordinate
+   * @return radius of the coordinate in km
    */
   public double getRadius() {
     return radius;
@@ -104,7 +104,7 @@ public class SphericCoordinate extends AbstractCoordinate {
   /**
    * Sets the radius of the coordinate
    *
-   * @param radius of the coordinate [0, inf)
+   * @param radius of the coordinate in km [0, inf)
    */
   public void setRadius(double radius) {
     ParameterUtil.assertNumberInRange(radius, 0.0, Double.POSITIVE_INFINITY, "radius");

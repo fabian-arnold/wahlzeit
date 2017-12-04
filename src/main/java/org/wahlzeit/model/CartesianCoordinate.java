@@ -54,7 +54,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
   /**
    * Gets the x-component of the coordinate
    *
-   * @return x-component
+   * @return x-component in km
    */
   public double getX() {
     return x;
@@ -63,7 +63,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
   /**
    * Sets the x-component of the coordinate
    *
-   * @param x x-component
+   * @param x x-component in km
    * @throws IllegalArgumentException throws an exception if the provided value is non numeric
    */
   public void setX(double x) {
@@ -74,7 +74,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
   /**
    * Gets the y-component of the coordinate
    *
-   * @return y-component
+   * @return y-component in km
    */
   public double getY() {
     return y;
@@ -83,7 +83,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
   /**
    * Sets the y-component of the coordinate
    *
-   * @param y y-component
+   * @param y y-component in km
    */
   public void setY(double y) {
     ParameterUtil.assertValidNumber(y, "y");
@@ -93,7 +93,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
   /**
    * Gets the z-component of the coordinate
    *
-   * @return z-component
+   * @return z-component in km
    */
   public double getZ() {
     return z;
@@ -102,7 +102,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
   /**
    * Sets the z-component of the coordinate
    *
-   * @param z z-component
+   * @param z z-component in km
    */
   public void setZ(double z) {
     ParameterUtil.assertValidNumber(z, "z");
