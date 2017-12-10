@@ -111,7 +111,7 @@ public class CoordinateConverter {
 
   /**
    * Selects a fitting converter for the coordinate and converts it. It checks if the conversion is
-   * possible otherwise an {@link UnsupportedOperationException} is thrown <p> Supported conversions
+   * possible otherwise an {@link UnsupportedConversionException} is thrown <p> Supported conversions
    * are: <ul> <li>CartesianCoordinate => SphericCoordinate</li> <li>SphericCoordinate =>
    * CartesianCoordinate</li> </ul>
    *
@@ -119,7 +119,7 @@ public class CoordinateConverter {
    * @param targetClass to convert to
    * @param <T> Type of the target class
    * @return coordinate in targetClass
-   * @throws UnsupportedOperationException if conversion failed
+   * @throws UnsupportedConversionException if the conversion was not possible
    */
   @SuppressWarnings("unchecked")
   public static <T extends Coordinate> T convertTo(Coordinate coordinate, Class<T> targetClass) {
@@ -143,6 +143,7 @@ public class CoordinateConverter {
     if (x != null) {
       // we suppress unchecked warning so manually check the return type
       if (!(targetClass.isInstance(x))) {
+        // this should really not happen and if only during testing a new conversion type
         throw new IllegalStateException("There happend an internal error during conversion to " +
             targetClass.getSimpleName());
       }
@@ -151,8 +152,9 @@ public class CoordinateConverter {
     }
 
     // we found no conversion => throw an exception
-    throw new UnsupportedOperationException("Cannot cast from " + coordinate.getClass() + " to " +
-        targetClass + ".\nCheck JavaDoc of CoordinateConverter for supported casts.");
+    throw new UnsupportedConversionException("Cannot cast from " + coordinate.getClass() + " to " +
+        targetClass + ".\nCheck JavaDoc of CoordinateConverter for supported casts.", targetClass,
+        coordinate.getClass());
   }
 
   /**
