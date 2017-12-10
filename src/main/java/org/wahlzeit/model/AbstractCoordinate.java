@@ -22,6 +22,7 @@
 package org.wahlzeit.model;
 
 import org.wahlzeit.model.converter.CoordinateConverter;
+import org.wahlzeit.model.converter.UnsupportedConversionException;
 import org.wahlzeit.utils.ParameterUtil;
 
 /**
@@ -40,6 +41,7 @@ public abstract class AbstractCoordinate implements Coordinate {
    * @return instance converted to a {@link CartesianCoordinate}
    * @see CoordinateConverter#convertTo(Coordinate, Class)
    * @see CartesianCoordinate
+   * @throws UnsupportedConversionException if the conversion was not possible
    */
   @Override
   public CartesianCoordinate asCartesianCoordinate() {
@@ -51,6 +53,7 @@ public abstract class AbstractCoordinate implements Coordinate {
    *
    * @param target coordinate
    * @return distance to target
+   * @throws UnsupportedConversionException if the conversion for distance calculation was not possible
    */
   @Override
   public double getCartesianDistance(Coordinate target) {
@@ -71,6 +74,7 @@ public abstract class AbstractCoordinate implements Coordinate {
    * @return instance converted to a {@link SphericCoordinate}
    * @see CoordinateConverter#convertTo(Coordinate, Class)
    * @see SphericCoordinate
+   * @throws UnsupportedConversionException if the conversion was not possible
    */
   @Override
   public SphericCoordinate asSphericCoordinate() {
@@ -82,6 +86,7 @@ public abstract class AbstractCoordinate implements Coordinate {
    *
    * @param target coordinate
    * @return distance to target
+   * @throws UnsupportedConversionException if the conversion for distance calculation was not possible
    */
   @Override
   public double getSphericalDistance(Coordinate target) {
@@ -101,6 +106,7 @@ public abstract class AbstractCoordinate implements Coordinate {
    * @param target to calculate distance to
    * @return distance as double
    * @see DistanceCalculator#cartesianDistance(CartesianCoordinate, CartesianCoordinate)
+   * @throws UnsupportedConversionException if the conversion for distance calculation was not possible
    */
   @Override
   public double getDistance(Coordinate target) {
