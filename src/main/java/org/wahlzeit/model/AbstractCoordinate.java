@@ -39,12 +39,12 @@ public abstract class AbstractCoordinate implements Coordinate {
    * CoordinateConverter}
    *
    * @return instance converted to a {@link CartesianCoordinate}
+   * @throws UnsupportedConversionException if the conversion was not possible
    * @see CoordinateConverter#convertTo(Coordinate, Class)
    * @see CartesianCoordinate
-   * @throws UnsupportedConversionException if the conversion was not possible
    */
   @Override
-  public CartesianCoordinate asCartesianCoordinate() {
+  public CartesianCoordinate asCartesianCoordinate() throws UnsupportedConversionException {
     return CoordinateConverter.convertTo(this, CartesianCoordinate.class);
   }
 
@@ -52,18 +52,25 @@ public abstract class AbstractCoordinate implements Coordinate {
    * Calculates the cartesian distance from instance to target.
    *
    * @param target coordinate
-   * @return distance to target
-   * @throws UnsupportedConversionException if the conversion for distance calculation was not possible
+   * @return distance to target or {@code Double.NaN} if conversion was not possible
    */
   @Override
   public double getCartesianDistance(Coordinate target) {
+
+    ParameterUtil.assertNotNull(target, "target");
+
     // handle the special case when target is a NoWhereCoordinate
-    if (target instanceof NoWhereCoordinate) {
+
+    if (target instanceof NoWhereCoordinate || this instanceof NoWhereCoordinate) {
       return Double.POSITIVE_INFINITY;
     }
 
-    return DistanceCalculator
-        .cartesianDistance(this.asCartesianCoordinate(), target.asCartesianCoordinate());
+    try {
+      return DistanceCalculator
+          .cartesianDistance(this.asCartesianCoordinate(), target.asCartesianCoordinate());
+    } catch (UnsupportedConversionException ex) {
+      return Double.NaN;
+    }
   }
 
   /**
@@ -72,12 +79,12 @@ public abstract class AbstractCoordinate implements Coordinate {
    * CoordinateConverter}
    *
    * @return instance converted to a {@link SphericCoordinate}
+   * @throws UnsupportedConversionException if the conversion was not possible
    * @see CoordinateConverter#convertTo(Coordinate, Class)
    * @see SphericCoordinate
-   * @throws UnsupportedConversionException if the conversion was not possible
    */
   @Override
-  public SphericCoordinate asSphericCoordinate() {
+  public SphericCoordinate asSphericCoordinate() throws UnsupportedConversionException {
     return CoordinateConverter.convertTo(this, SphericCoordinate.class);
   }
 
@@ -85,18 +92,25 @@ public abstract class AbstractCoordinate implements Coordinate {
    * Calculates the spherical distance from instance to target
    *
    * @param target coordinate
-   * @return distance to target
-   * @throws UnsupportedConversionException if the conversion for distance calculation was not possible
+   * @return distance to target or {@code Double.NaN} if conversion was not possible
    */
   @Override
   public double getSphericalDistance(Coordinate target) {
+
+    ParameterUtil.assertNotNull(target, "target");
+
     // handle the special case when target is a NoWhereCoordinate
-    if (target instanceof NoWhereCoordinate) {
+
+    if (target instanceof NoWhereCoordinate || this instanceof NoWhereCoordinate) {
       return Double.POSITIVE_INFINITY;
     }
 
-    return DistanceCalculator
-        .sphericDistance(this.asSphericCoordinate(), target.asSphericCoordinate());
+    try {
+      return DistanceCalculator
+          .sphericDistance(this.asSphericCoordinate(), target.asSphericCoordinate());
+    } catch (UnsupportedConversionException e) {
+      return Double.NaN;
+    }
 
   }
 
@@ -104,9 +118,8 @@ public abstract class AbstractCoordinate implements Coordinate {
    * Calculates the cartesian distance from instance to target
    *
    * @param target to calculate distance to
-   * @return distance as double
+   * @return distance as double or {@code Double.NaN} if conversion was not possible
    * @see DistanceCalculator#cartesianDistance(CartesianCoordinate, CartesianCoordinate)
-   * @throws UnsupportedConversionException if the conversion for distance calculation was not possible
    */
   @Override
   public double getDistance(Coordinate target) {
@@ -114,15 +127,7 @@ public abstract class AbstractCoordinate implements Coordinate {
     /*
       the implementation refers to cartesianDistance to get consistent results
      */
-
-    ParameterUtil.assertNotNull(target, "target");
-
-    if (target instanceof NoWhereCoordinate || this instanceof NoWhereCoordinate) {
-      return Double.POSITIVE_INFINITY;
-    }
-
-    return DistanceCalculator
-        .cartesianDistance(this.asCartesianCoordinate(), target.asCartesianCoordinate());
+    return this.getCartesianDistance(target);
   }
 
   /**

@@ -22,6 +22,7 @@
 package org.wahlzeit.model;
 
 import org.wahlzeit.model.converter.CoordinateConverter;
+import org.wahlzeit.model.converter.UnsupportedConversionException;
 
 /**
  * Provides a interface for generic coordinate types
@@ -38,7 +39,7 @@ public interface Coordinate {
    * @see CoordinateConverter#convertTo(Coordinate, Class)
    * @see CartesianCoordinate
    */
-  CartesianCoordinate asCartesianCoordinate();
+  CartesianCoordinate asCartesianCoordinate() throws UnsupportedConversionException;
 
   /**
    * Calculates the cartesian distance from instance to target.
@@ -57,7 +58,7 @@ public interface Coordinate {
    * @see CoordinateConverter#convertTo(Coordinate, Class)
    * @see SphericCoordinate
    */
-  SphericCoordinate asSphericCoordinate();
+  SphericCoordinate asSphericCoordinate() throws UnsupportedConversionException;
 
   /**
    * Calculates the spherical distance from instance to target

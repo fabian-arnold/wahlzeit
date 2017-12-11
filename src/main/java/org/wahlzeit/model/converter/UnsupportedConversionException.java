@@ -23,11 +23,8 @@ package org.wahlzeit.model.converter;
 
 /**
  * This exception indicates that a conversion from one coordinate to an other failed.
- *
- * This is a runtime time exception by design, because in some cases it is not necessary to handle
- * this exception because it won´t happen.
  */
-public class UnsupportedConversionException extends RuntimeException {
+public class UnsupportedConversionException extends Exception {
 
   private final Class conversionTarget;
   private final Class conversionFrom;

@@ -21,6 +21,7 @@
 
 package org.wahlzeit.model.converter;
 
+import java.util.logging.Logger;
 import org.wahlzeit.model.CartesianCoordinate;
 import org.wahlzeit.model.Coordinate;
 import org.wahlzeit.model.SphericCoordinate;
@@ -31,6 +32,8 @@ import org.wahlzeit.utils.ParameterUtil;
  */
 public class CoordinateConverter {
 
+
+  private static final Logger log = Logger.getLogger(CoordinateConverter.class.getName());
 
   /**
    * Private constructor to prevent instantiation of this class
@@ -143,7 +146,8 @@ public class CoordinateConverter {
    * @throws UnsupportedConversionException if the conversion was not possible
    */
   @SuppressWarnings("unchecked")
-  public static <T extends Coordinate> T convertTo(Coordinate coordinate, Class<T> targetClass) {
+  public static <T extends Coordinate> T convertTo(Coordinate coordinate, Class<T> targetClass)
+      throws UnsupportedConversionException {
 
     /*
       This method provides a generic way to convert coordinates.
@@ -165,12 +169,17 @@ public class CoordinateConverter {
       // we suppress unchecked warning so manually check the return type
       if (!(targetClass.isInstance(x))) {
         // this should really not happen and if only during testing a new conversion type
+        log.warning("Possible bug in impl_convertTo a conversion to " + targetClass.getName() +
+            " was tried but the result was of type: " + x.getClass().getName());
         throw new IllegalStateException("There happend an internal error during conversion to " +
             targetClass.getSimpleName());
       }
 
       return x;
     }
+
+    log.warning("Unsupported conversion was tried (" + coordinate.getClass().getName() +
+        " => " + targetClass.getName() + ").");
 
     // we found no conversion => throw an exception
     throw new UnsupportedConversionException("Cannot cast from " + coordinate.getClass() + " to " +
