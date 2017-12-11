@@ -52,7 +52,8 @@ public abstract class AbstractCoordinate implements Coordinate {
    * Calculates the cartesian distance from instance to target.
    *
    * @param target coordinate
-   * @return distance to target or {@code Double.NaN} if conversion was not possible
+   * @return distance to target in km or {@code Double.NaN} if conversion was not possible
+   * @see DistanceCalculator#cartesianDistance(CartesianCoordinate, CartesianCoordinate)
    */
   @Override
   public double getCartesianDistance(Coordinate target) {
@@ -92,7 +93,8 @@ public abstract class AbstractCoordinate implements Coordinate {
    * Calculates the spherical distance from instance to target
    *
    * @param target coordinate
-   * @return distance to target or {@code Double.NaN} if conversion was not possible
+   * @return distance to target in km or {@code Double.NaN} if conversion was not possible
+   * @see DistanceCalculator#sphericDistance(SphericCoordinate, SphericCoordinate)
    */
   @Override
   public double getSphericalDistance(Coordinate target) {
@@ -117,9 +119,10 @@ public abstract class AbstractCoordinate implements Coordinate {
   /**
    * Calculates the cartesian distance from instance to target
    *
-   * @param target to calculate distance to
+   * @param target to calculate distance to in km
    * @return distance as double or {@code Double.NaN} if conversion was not possible
    * @see DistanceCalculator#cartesianDistance(CartesianCoordinate, CartesianCoordinate)
+   * @see #getCartesianDistance(Coordinate)
    */
   @Override
   public double getDistance(Coordinate target) {
@@ -135,6 +138,7 @@ public abstract class AbstractCoordinate implements Coordinate {
    *
    * @param other to compare
    * @return true if given objects are equal
+   * @see #equals(Object)
    */
   @Override
   public boolean isEqual(Coordinate other) {

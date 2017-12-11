@@ -71,7 +71,7 @@ public interface Coordinate {
   /**
    * Calculates the distance from instance to target
    * @param target to calculate distance to
-   * @return distance as double
+   * @return distance in km
    */
   double getDistance(Coordinate target);
 
