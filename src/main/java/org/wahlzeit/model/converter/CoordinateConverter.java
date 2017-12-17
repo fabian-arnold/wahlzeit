@@ -83,7 +83,7 @@ public class CoordinateConverter {
         -sphericCoordinate.getRadius() * Math.cos(Math.toRadians(sphericCoordinate.getLatitude()))
             * Math.cos(Math.toRadians(sphericCoordinate.getLongitude()));
 
-    cartesianCoordinate = new CartesianCoordinate(x, y, z);
+    cartesianCoordinate = CartesianCoordinate.create(x, y, z);
 
     return cartesianCoordinate;
   }
@@ -128,7 +128,7 @@ public class CoordinateConverter {
     double longitude = Math
         .toDegrees(Math.atan2(cartesianCoordinate.getX(), -cartesianCoordinate.getZ()));
 
-    sphericCoordinate = new SphericCoordinate(latitude, longitude, radius);
+    sphericCoordinate = SphericCoordinate.create(latitude, longitude, radius);
 
     return sphericCoordinate;
   }

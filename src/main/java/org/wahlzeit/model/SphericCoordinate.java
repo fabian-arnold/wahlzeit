@@ -21,6 +21,12 @@
 
 package org.wahlzeit.model;
 
+import static org.wahlzeit.utils.HashUtil.hash3;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import org.wahlzeit.model.converter.CoordinateConverter;
 import org.wahlzeit.utils.ParameterUtil;
 
@@ -32,35 +38,23 @@ public class SphericCoordinate extends AbstractCoordinate {
   /**
    * Stores the latitude of the coordinate
    */
-  private double latitude;
+  private final double latitude;
 
   /**
    * Stores the longitude of the coordinate
    */
-  private double longitude;
+  private final double longitude;
 
   /**
    * Stores the radius of the described point
    */
-  private double radius;
+  private final double radius;
 
 
   /**
-   * Creates a spheric coordinate at the location 0, 0 with a radius of 0
+   * This map stores all instances of cartesian coordinates
    */
-  public SphericCoordinate() {
-    this(0, 0, 0);
-  }
-
-  /**
-   * Creates a spheric coordinate at given location with the radius 0
-   *
-   * @param latitude of the coordinate
-   * @param longitude of the coordinate
-   */
-  public SphericCoordinate(double latitude, double longitude) {
-    this(latitude, longitude, 0.0);
-  }
+  private static final HashMap<Integer, List<WeakReference<SphericCoordinate>>> INSTANCES = new HashMap<>();
 
   /**
    * Creates a spheric coordinate with given location and radius
@@ -69,7 +63,84 @@ public class SphericCoordinate extends AbstractCoordinate {
    * @param longitude of the coordinate [-180, 180]
    * @param radius of the coordinate [0, inf)
    */
-  public SphericCoordinate(double latitude, double longitude, double radius) {
+  public synchronized static SphericCoordinate create(double latitude, double longitude, double radius) {
+    // ensure a object get not persist twice
+    synchronized (INSTANCES) {
+      ParameterUtil.assertValidNumber(latitude, "latitude");
+      ParameterUtil.assertValidNumber(longitude, "longitude");
+      ParameterUtil.assertValidNumber(radius, "radius");
+
+      // look if we already have a instance with the provided coordinates
+      int hash = hash3(latitude, longitude, radius);
+      SphericCoordinate coord;
+      if (INSTANCES.containsKey(hash)) {
+        // there is already a list of objects with this hash
+        List<WeakReference<SphericCoordinate>> coords = INSTANCES.get(hash);
+        for (WeakReference<SphericCoordinate> refCoord : coords) {
+          coord = refCoord.get();
+          if (coord == null) {
+            // the finalizer will clean it up probably
+            continue;
+          }
+          if (coord.getLatitude() == latitude && coord.getLongitude() == longitude && coord.getRadius() == radius) {
+            return coord;
+          }
+        }
+      /*
+       The reference was deleted by the gc or we have no matching
+       => Delete the invalid reference and create a new reference
+       */
+        coord = new SphericCoordinate(latitude, longitude, radius);
+        coords.add(new WeakReference<>(coord));
+        // return the created reference
+        return coord;
+      } else {
+        // the hash is not existent => create a list of objects with this hash
+        List<WeakReference<SphericCoordinate>> coords = new ArrayList<>();
+        // create our new coordinate
+        coord = new SphericCoordinate(latitude, longitude, radius);
+        // store a reference to our coordinate
+        coords.add(new WeakReference<>(coord));
+        INSTANCES.put(hash, coords);
+        // return the created reference
+        return coord;
+      }
+    }
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    // our object gets finalized => remove it from instances
+
+    int hash = hash3(latitude, longitude, radius);
+
+    synchronized (INSTANCES) {
+      List<WeakReference<SphericCoordinate>> coords = INSTANCES.get(hash);
+
+      for (WeakReference<SphericCoordinate> refCoord : coords) {
+        // check if we are the entry in the list
+        if (refCoord.get() == this) {
+          // jaj we are the entry in the list lets remove us
+          // acquire the lock and remove us
+
+          coords.remove(refCoord);
+          // work done
+          return;
+        }
+      }
+    }
+  }
+
+
+  /**
+   * Creates a spheric coordinate with given location and radius
+   *
+   * @param latitude of the coordinate [-90, 90]
+   * @param longitude of the coordinate [-180, 180]
+   * @param radius of the coordinate [0, inf)
+   */
+  private SphericCoordinate(double latitude, double longitude, double radius) {
     this.latitude = latitude;
     this.longitude = longitude;
     this.radius = radius;
@@ -85,13 +156,13 @@ public class SphericCoordinate extends AbstractCoordinate {
   }
 
   /**
-   * Sets the latitude of the coordinate
+   * Create a SphericCoordinate with the updated latitude
    *
    * @param latitude of the coordinate in degrees [-90, 90]
    */
-  public void setLatitude(double latitude) {
+  public SphericCoordinate withLatitude(double latitude) {
     ParameterUtil.assertNumberInRange(latitude, -90.0, 90.0, "latitude");
-    this.latitude = latitude;
+    return create(latitude, this.longitude, this.radius);
   }
 
   /**
@@ -104,13 +175,13 @@ public class SphericCoordinate extends AbstractCoordinate {
   }
 
   /**
-   * Sets the longitude of the coordinate
+   * Create a SphericCoordinate with the updated longitude
    *
    * @param longitude of the coordinate in degrees [-180, 180]
    */
-  public void setLongitude(double longitude) {
+  public SphericCoordinate withLongitude(double longitude) {
     ParameterUtil.assertNumberInRange(longitude, -180.0, 180.0, "longitude");
-    this.longitude = longitude;
+    return create(this.latitude, longitude, this.radius);
   }
 
   /**
@@ -123,13 +194,13 @@ public class SphericCoordinate extends AbstractCoordinate {
   }
 
   /**
-   * Sets the radius of the coordinate
+   * Create a SphericCoordinate with the updated radius
    *
    * @param radius of the coordinate in km [0, inf)
    */
-  public void setRadius(double radius) {
+  public SphericCoordinate withRadius(double radius) {
     ParameterUtil.assertNumberInRange(radius, 0.0, Double.POSITIVE_INFINITY, "radius");
-    this.radius = radius;
+    return create(this.latitude, this.longitude, radius);
   }
 
   @Override

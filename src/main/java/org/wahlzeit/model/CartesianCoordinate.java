@@ -22,6 +22,12 @@
 package org.wahlzeit.model;
 
 
+import static org.wahlzeit.utils.HashUtil.hash3;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import org.wahlzeit.utils.ParameterUtil;
 
 /**
@@ -32,29 +38,22 @@ public class CartesianCoordinate extends AbstractCoordinate {
   /**
    * Stores the x-component of the coordinate
    */
-  private double x;
+  private final double x;
 
   /**
    * Stores the y-component of the coordinate
    */
-  private double y;
+  private final double y;
 
   /**
    * Stores the z-component of the coordinate
    */
-  private double z;
-
+  private final double z;
 
   /**
-   * Creates a new coordinate with x, y and z set to 0
+   * This map stores all instances of cartesian coordinates
    */
-  public CartesianCoordinate() {
-    // we can not use setters here because it would break our nowhere implementation
-    x = 0;
-    y = 0;
-    z = 0;
-  }
-
+  private static final HashMap<Integer, List<WeakReference<CartesianCoordinate>>> INSTANCES = new HashMap<>();
 
   /**
    * Creates a new CartesianCoordinate with given x, y and z
@@ -65,11 +64,88 @@ public class CartesianCoordinate extends AbstractCoordinate {
    * @throws IllegalArgumentException throws an exception if the provided components are non
    * numeric
    */
-  public CartesianCoordinate(double x, double y, double z) {
-    // we use setters to check the given values
-    this.setX(x);
-    this.setY(y);
-    this.setZ(z);
+  public synchronized static CartesianCoordinate create(double x, double y, double z) {
+    // ensure a object get not persist twice
+    synchronized (INSTANCES) {
+      ParameterUtil.assertValidNumber(x, "x");
+      ParameterUtil.assertValidNumber(y, "y");
+      ParameterUtil.assertValidNumber(z, "z");
+
+      // look if we already have a instance with the provided coordinates
+      int hash = hash3(x, y, z);
+      CartesianCoordinate coord;
+      if (INSTANCES.containsKey(hash)) {
+        // there is already a list of objects with this hash
+        List<WeakReference<CartesianCoordinate>> coords = INSTANCES.get(hash);
+        for (WeakReference<CartesianCoordinate> refCoord : coords) {
+          coord = refCoord.get();
+          if (coord == null) {
+            // the finalizer will clean it up probably
+            continue;
+          }
+          if (coord.getX() == x && coord.getY() == y && coord.getZ() == z) {
+            return coord;
+          }
+        }
+      /*
+       The reference was deleted by the gc or we have no matching
+       => Delete the invalid reference and create a new reference
+       */
+        coord = new CartesianCoordinate(x, y, z);
+        coords.add(new WeakReference<>(coord));
+        // return the created reference
+        return coord;
+      } else {
+        // the hash is not existent => create a list of objects with this hash
+        List<WeakReference<CartesianCoordinate>> coords = new ArrayList<>();
+        // create our new coordinate
+        coord = new CartesianCoordinate(x, y, z);
+        // store a reference to our coordinate
+        coords.add(new WeakReference<>(coord));
+        INSTANCES.put(hash, coords);
+        // return the created reference
+        return coord;
+      }
+    }
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    // our object gets finalized => remove it from instances
+
+    int hash = hash3(x, y, z);
+
+    synchronized (INSTANCES) {
+    List<WeakReference<CartesianCoordinate>> coords = INSTANCES.get(hash);
+
+      for (WeakReference<CartesianCoordinate> refCoord : coords) {
+        // check if we are the entry in the list
+        if (refCoord.get() == this) {
+          // jaj we are the entry in the list lets remove us
+          // acquire the lock and remove us
+
+          coords.remove(refCoord);
+          // work done
+          return;
+        }
+      }
+    }
+  }
+
+  /**
+   * Creates a new CartesianCoordinate with given x, y and z
+   *
+   * @param x z-Component of the coordinate
+   * @param y y-Component of the coordinate
+   * @param z z-Component of the coordinate
+   * @throws IllegalArgumentException throws an exception if the provided components are non
+   * numeric
+   */
+  private CartesianCoordinate(double x, double y, double z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
   }
 
   /**
@@ -82,14 +158,15 @@ public class CartesianCoordinate extends AbstractCoordinate {
   }
 
   /**
-   * Sets the x-component of the coordinate
+   * Returns a Coordinate with updated x
    *
-   * @param x x-component in km
+   * @param x of the coordinate in km
+   * @return Coordinate with same y, z and updated x
    * @throws IllegalArgumentException throws an exception if the provided value is non numeric
    */
-  public void setX(double x) {
+  public CartesianCoordinate withX(double x) {
     ParameterUtil.assertValidNumber(x, "x");
-    this.x = x;
+    return CartesianCoordinate.create(x, this.y, this.z);
   }
 
   /**
@@ -102,13 +179,15 @@ public class CartesianCoordinate extends AbstractCoordinate {
   }
 
   /**
-   * Sets the y-component of the coordinate
+   * Returns a Coordinate with updated y
    *
-   * @param y y-component in km
+   * @param y of the coordinate in km
+   * @return Coordinate with same x, z and updated y
+   * @throws IllegalArgumentException throws an exception if the provided value is non numeric
    */
-  public void setY(double y) {
+  public CartesianCoordinate withY(double y) {
     ParameterUtil.assertValidNumber(y, "y");
-    this.y = y;
+    return CartesianCoordinate.create(this.x, y, this.z);
   }
 
   /**
@@ -120,60 +199,19 @@ public class CartesianCoordinate extends AbstractCoordinate {
     return z;
   }
 
+
   /**
-   * Sets the z-component of the coordinate
+   * Returns a Coordinate with updated z
    *
-   * @param z z-component in km
+   * @param z of the coordinate in km
+   * @return Coordinate with same x, z and updated z
+   * @throws IllegalArgumentException throws an exception if the provided value is non numeric
    */
-  public void setZ(double z) {
+  public CartesianCoordinate withZ(double z) {
     ParameterUtil.assertValidNumber(z, "z");
-    this.z = z;
+    return CartesianCoordinate.create(this.x, this.y, z);
   }
 
-  /**
-   * Returns true if compared to an other coordinate and all components are equal
-   *
-   * @param o an object ot compare with
-   * @return true if o is an coordinate and all components are equal
-   */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof CartesianCoordinate)) {
-      return false;
-    }
-
-    CartesianCoordinate that = (CartesianCoordinate) o;
-
-    if (Double.compare(that.x, x) != 0) {
-      return false;
-    }
-    if (Double.compare(that.y, y) != 0) {
-      return false;
-    }
-    return Double.compare(that.z, z) == 0;
-  }
-
-
-  /**
-   * Calculates an hash for every coordinate. The hash is equal if all components are equal.
-   *
-   * @return hashed value of the coordinate
-   */
-  @Override
-  public int hashCode() {
-    int result;
-    long temp;
-    temp = Double.doubleToLongBits(x);
-    result = (int) (temp ^ (temp >>> 32));
-    temp = Double.doubleToLongBits(y);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = Double.doubleToLongBits(z);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    return result;
-  }
 
   /**
    * Converts the coordinate to an string

@@ -1,7 +1,5 @@
 package org.wahlzeit.model;
 
-import static org.junit.Assert.*;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,8 +12,8 @@ public class SphericCoordinateTest {
 
   @Test
   public void distance() throws Exception {
-    SphericCoordinate s1 = new SphericCoordinate(0, 0, 0);
-    SphericCoordinate s2 = new SphericCoordinate(0, 0, 10);
+    SphericCoordinate s1 = SphericCoordinate.create(0, 0, 0);
+    SphericCoordinate s2 = SphericCoordinate.create(0, 0, 10);
 
     // distance from s1 to s2 should be the same
     Assert.assertEquals(s1.getDistance(s2), s2.getDistance(s1), 0.00001);
@@ -23,18 +21,39 @@ public class SphericCoordinateTest {
     // distance should be 10
     Assert.assertEquals(s1.getDistance(s2), 10.0, 0.00001);
 
-    SphericCoordinate s3 = new SphericCoordinate(-90, 0, 10);
-    SphericCoordinate s4 = new SphericCoordinate(90, 0, 10);
+    SphericCoordinate s3 = SphericCoordinate.create(-90, 0, 10);
+    SphericCoordinate s4 = SphericCoordinate.create(90, 0, 10);
 
     // distance should be 20
     Assert.assertEquals(s3.getDistance(s4), 20.0, 0.00001);
 
-    SphericCoordinate s5 = new SphericCoordinate(-90, 180, 10);
-    SphericCoordinate s6 = new SphericCoordinate(90, 0, 10);
+    SphericCoordinate s5 = SphericCoordinate.create(-90, 180, 10);
+    SphericCoordinate s6 = SphericCoordinate.create(90, 0, 10);
 
     // distance should be 20
     Assert.assertEquals(s5.getDistance(s6), 20.0, 0.00001);
 
+  }
+
+  @Test
+  public void testExpectSameInstance() {
+    // for real testing we need to let this run endless so the garbage collector gets involved
+    for (int i = 0; i < 1000; i++) {
+      double longitude = Math.random();
+      double latitude = Math.random();
+      double radius = Math.random();
+
+      SphericCoordinate coord1 = SphericCoordinate.create(longitude, latitude, radius);
+      SphericCoordinate coord2 = SphericCoordinate.create(longitude, latitude, radius);
+      Assert.assertTrue(coord1 == coord2);
+    }
+  }
+
+  @Test
+  public void testWith() {
+    Assert.assertTrue(
+        SphericCoordinate.create(0, 0, 0).withLatitude(10).withLongitude(10).withRadius(10) ==
+            SphericCoordinate.create(10, 10, 10));
   }
 
 }

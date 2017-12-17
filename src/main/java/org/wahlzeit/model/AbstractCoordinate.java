@@ -26,7 +26,8 @@ import org.wahlzeit.model.converter.UnsupportedConversionException;
 import org.wahlzeit.utils.ParameterUtil;
 
 /**
- * Provides the base implementation of a coordinate
+ * Provides the base implementation of a coordinate. The implementation itself should follow
+ * the value object pattern
  *
  * @see SphericCoordinate
  * @see CartesianCoordinate

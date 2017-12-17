@@ -1,12 +1,9 @@
 package org.wahlzeit.model.converter;
 
-import static org.junit.Assert.*;
-
 import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 import org.wahlzeit.model.CartesianCoordinate;
-import org.wahlzeit.model.Coordinate;
 import org.wahlzeit.model.SphericCoordinate;
 
 public class CoordinateConverterTest {
@@ -32,7 +29,7 @@ public class CoordinateConverterTest {
   }
 
   private void convertSphericCartesian(double lat1, double lon, double rad) {
-    SphericCoordinate sphericCoordinate = new SphericCoordinate(lat1, lon, rad);
+    SphericCoordinate sphericCoordinate = SphericCoordinate.create(lat1, lon, rad);
     CartesianCoordinate cartesianCoordinate = CoordinateConverter
         .convertToCartesian(sphericCoordinate);
     SphericCoordinate sphericCoordinate2 = CoordinateConverter
@@ -51,7 +48,7 @@ public class CoordinateConverterTest {
   @Test
   public void test_typeSphericCartesian() throws Exception {
     CartesianCoordinate c = CoordinateConverter
-        .convertTo(new SphericCoordinate(), CartesianCoordinate.class);
+        .convertTo(SphericCoordinate.create(0,0,0), CartesianCoordinate.class);
     Assert.assertNotNull(c);
   }
 
@@ -61,7 +58,7 @@ public class CoordinateConverterTest {
   @Test
   public void test_typeCartesianSpheric() throws Exception {
     SphericCoordinate s = CoordinateConverter
-        .convertTo(new CartesianCoordinate(), SphericCoordinate.class);
+        .convertTo(CartesianCoordinate.create(0, 0, 0), SphericCoordinate.class);
     Assert.assertNotNull(s);
   }
 
@@ -72,10 +69,10 @@ public class CoordinateConverterTest {
   @Test
   public void test_conversionSameType() throws Exception {
 
-    SphericCoordinate s = new SphericCoordinate();
+    SphericCoordinate s = SphericCoordinate.create(0,0,0);
     Assert.assertEquals(s, CoordinateConverter.convertTo(s, SphericCoordinate.class));
 
-    CartesianCoordinate c = new CartesianCoordinate();
+    CartesianCoordinate c = CartesianCoordinate.create(0, 0, 0);
     Assert.assertEquals(c, CoordinateConverter.convertTo(c, CartesianCoordinate.class));
   }
 }

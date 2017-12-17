@@ -16,7 +16,7 @@ public class Location {
      * @see NoWhereCoordinate
      */
     public Location() {
-        this.coordinate = new NoWhereCoordinate();
+        this.coordinate = NoWhereCoordinate.create();
     }
 
     /**

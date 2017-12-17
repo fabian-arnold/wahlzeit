@@ -26,13 +26,22 @@ package org.wahlzeit.model;
  */
 public class NoWhereCoordinate extends AbstractCoordinate {
 
-    private static final int NOWHERE_HASH_CODE = 948234134;
+
+    private static final NoWhereCoordinate INSTANCE = new NoWhereCoordinate();
 
     /**
      * Creates a new no where coordinate
      */
-    public NoWhereCoordinate() {
+    private NoWhereCoordinate() {
 
+    }
+
+  /**
+   * Creates a no where coordinate
+   * @return a no where coordinate
+   */
+    public static NoWhereCoordinate create(){
+        return INSTANCE;
     }
 
     /**
@@ -45,18 +54,6 @@ public class NoWhereCoordinate extends AbstractCoordinate {
         // nowhere is infinite far away we could use the implementation
         // of the base class but this gives more performance
         return Double.POSITIVE_INFINITY;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        // we can always return false cause nowhere is nowhere
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        // we return a hash code so we don't break a hashmap or something else
-        return NOWHERE_HASH_CODE;
     }
 
     @Override
