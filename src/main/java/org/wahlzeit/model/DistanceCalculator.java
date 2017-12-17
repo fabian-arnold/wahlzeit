@@ -53,8 +53,8 @@ public class DistanceCalculator {
          * https://en.wikipedia.org/wiki/Euclidean_distance
          */
 
-    ParameterUtil.assertNotNull("start", "start");
-    ParameterUtil.assertNotNull("end", "end");
+    ParameterUtil.assertNotNull(start, "start");
+    ParameterUtil.assertNotNull(end, "end");
 
     double distanceX = start.getX() - end.getX();
     double distanceY = start.getY() - end.getY();

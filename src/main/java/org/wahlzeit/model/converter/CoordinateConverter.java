@@ -179,7 +179,7 @@ public class CoordinateConverter {
     }
 
     log.warning("Unsupported conversion was tried (" + coordinate.getClass().getName() +
-        " => " + targetClass.getName() + ").");
+        " => " + targetClass.getName() + ")");
 
     // we found no conversion => throw an exception
     throw new UnsupportedConversionException("Cannot cast from " + coordinate.getClass() + " to " +
