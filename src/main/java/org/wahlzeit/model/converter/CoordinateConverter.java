@@ -124,6 +124,12 @@ public class CoordinateConverter {
     double radius = Math.sqrt(
         Math.pow(cartesianCoordinate.getX(), 2) + Math.pow(cartesianCoordinate.getY(), 2) + Math
             .pow(cartesianCoordinate.getZ(), 2));
+
+    if (radius == 0) {
+      // we dont want a division trough zero
+      return SphericCoordinate.create(0, 0, 0);
+    }
+
     double latitude = Math.toDegrees(Math.asin(cartesianCoordinate.getY() / radius));
     double longitude = Math
         .toDegrees(Math.atan2(cartesianCoordinate.getX(), -cartesianCoordinate.getZ()));
