@@ -204,39 +204,6 @@ public class SphericCoordinate extends AbstractCoordinate {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof SphericCoordinate)) {
-      return false;
-    }
-
-    SphericCoordinate that = (SphericCoordinate) o;
-
-    if (Double.compare(that.latitude, latitude) != 0) {
-      return false;
-    }
-    if (Double.compare(that.longitude, longitude) != 0) {
-      return false;
-    }
-    return Double.compare(that.radius, radius) == 0;
-  }
-
-  @Override
-  public int hashCode() {
-    int result;
-    long temp;
-    temp = Double.doubleToLongBits(latitude);
-    result = (int) (temp ^ (temp >>> 32));
-    temp = Double.doubleToLongBits(longitude);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = Double.doubleToLongBits(radius);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    return result;
-  }
-
-  @Override
   public String toString() {
     return "SphericCoordinate{" +
         "latitude=" + latitude +
