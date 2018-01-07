@@ -23,16 +23,15 @@ package org.wahlzeit.model;
 import com.google.appengine.api.images.Image;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Subclass;
-import org.wahlzeit.services.EmailAddress;
-import org.wahlzeit.services.Language;
-import org.wahlzeit.services.LogBuilder;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
+import org.wahlzeit.services.EmailAddress;
+import org.wahlzeit.services.Language;
+import org.wahlzeit.services.LogBuilder;
 
 /**
  * A User is a client that is logged-in, that is, has registered with the system.
@@ -43,269 +42,270 @@ import java.util.logging.Logger;
 @Subclass(index = true)
 public class User extends Client {
 
-	/**
-	 *
-	 */
-	public static final String EMAIL_ADDRESS = "emailAddress";
-	public static final String TERMS = "termsAndConditions";
+  /**
+   *
+   */
+  public static final String EMAIL_ADDRESS = "emailAddress";
+  public static final String TERMS = "termsAndConditions";
 
-	/**
-	 *
-	 */
-	public static final String STATUS = "status";
-	public static final String RIGHTS = "accessRights";
-	public static final String GENDER = "gender";
-	public static final String NOTIFY_ABOUT_PRAISE = "notifyAboutPraise";
-	public static final String MEMBER_SINCE = "memberSince";
-	public static final String NO_PHOTOS = "noPhotos";
+  /**
+   *
+   */
+  public static final String STATUS = "status";
+  public static final String RIGHTS = "accessRights";
+  public static final String GENDER = "gender";
+  public static final String NOTIFY_ABOUT_PRAISE = "notifyAboutPraise";
+  public static final String MEMBER_SINCE = "memberSince";
+  public static final String NO_PHOTOS = "noPhotos";
 
-	private static final Logger log = Logger.getLogger(User.class.getName());
+  private static final Logger log = Logger.getLogger(User.class.getName());
 
-	/**
-	 *
-	 */
-	protected boolean notifyAboutPraise = true;
-	protected Gender gender = Gender.UNDEFINED;
-	protected UserStatus status = UserStatus.CREATED;
+  /**
+   *
+   */
+  protected boolean notifyAboutPraise = true;
+  protected Gender gender = Gender.UNDEFINED;
+  protected UserStatus status = UserStatus.CREATED;
 
-	/**
-	 *
-	 */
-	protected Photo userPhoto = null;
-	protected Set<Photo> photos = new HashSet<Photo>();
-	@Ignore // only used as temporary variable
-	protected Image uploadedImage = null;
+  /**
+   *
+   */
+  protected Photo userPhoto = null;
+  protected Set<Photo> photos = new HashSet<Photo>();
+  @Ignore // only used as temporary variable
+  protected Image uploadedImage = null;
 
-	/**
-	 *
-	 */
-	protected long creationTime = System.currentTimeMillis();
+  /**
+   *
+   */
+  protected long creationTime = System.currentTimeMillis();
 
 
-	/**
-	 *
-	 */
-	public User(String id, String myName, String myEmailAddress) {
-		this(id, myName, EmailAddress.getFromString(myEmailAddress), null);
-	}
+  /**
+   *
+   */
+  public User(String id, String myName, String myEmailAddress) {
+    this(id, myName, EmailAddress.getFromString(myEmailAddress), null);
+  }
 
-	/**
-	 *
-	 */
-	public User(String id, String myName, String myEmailAddress, Client previousClient) {
-		this(id, myName, EmailAddress.getFromString(myEmailAddress), previousClient);
-	}
+  /**
+   *
+   */
+  public User(String id, String myName, String myEmailAddress, Client previousClient) {
+    this(id, myName, EmailAddress.getFromString(myEmailAddress), previousClient);
+  }
 
-	/**
-	 *
-	 */
-	public User(String id, String nickname, EmailAddress emailAddress, Client previousClient) {
-		initialize(id, nickname, emailAddress, AccessRights.USER, previousClient);
-	}
+  /**
+   *
+   */
+  public User(String id, String nickname, EmailAddress emailAddress, Client previousClient) {
+    initialize(id, nickname, emailAddress, AccessRights.USER, previousClient);
+  }
 
-	/**
-	 * @methodtype initialization
-	 */
-	protected void initialize(String id, String nickName, EmailAddress emailAddress, AccessRights accessRights,
-							  Client previousClient) {
-		super.initialize(id, nickName, emailAddress, accessRights, previousClient);
+  /**
+   *
+   */
+  protected User() {
+    // do nothing
+  }
 
-		log.config(LogBuilder.createSystemMessage().
-				addAction("initialize user").
-				addParameter("id", id).
-				addParameter("name", nickName).
-				addParameter("E-Mail", emailAddress.asString()).toString());
-		incWriteCount();
-	}
+  /**
+   * @methodtype get
+   */
+  public static Comparator<Photo> getPhotoByPraiseReverseComparator() {
+    return new Comparator<Photo>() {
+      public int compare(Photo p1, Photo p2) {
+        double sc1 = p1.getPraise();
+        double sc2 = p2.getPraise();
+        if (sc1 == sc2) {
+          String id1 = String.valueOf(p1.getId());
+          String id2 = String.valueOf(p2.getId());
+          return id1.compareTo(id2);
+        } else if (sc1 < sc2) {
+          return 1;
+        } else {
+          return -1;
+        }
+      }
+    };
+  }
 
-	/**
-	 *
-	 */
-	protected User() {
-		// do nothing
-	}
+  /**
+   * @methodtype initialization
+   */
+  protected void initialize(String id, String nickName, EmailAddress emailAddress,
+      AccessRights accessRights,
+      Client previousClient) {
+    super.initialize(id, nickName, emailAddress, accessRights, previousClient);
 
-	@Override
-	protected void doSetLanguage(Language newLanguage) {
-		for (Iterator<Photo> i = photos.iterator(); i.hasNext(); ) {
-			Photo photo = i.next();
-			photo.setOwnerLanguage(language);
-		}
-	}
+    log.config(LogBuilder.createSystemMessage().
+        addAction("initialize user").
+        addParameter("id", id).
+        addParameter("name", nickName).
+        addParameter("E-Mail", emailAddress.asString()).toString());
+    incWriteCount();
+  }
 
-	/**
-	 * @methodtype boolean query
-	 */
-	public boolean getNotifyAboutPraise() {
-		return notifyAboutPraise;
-	}
+  @Override
+  protected void doSetLanguage(Language newLanguage) {
+    for (Iterator<Photo> i = photos.iterator(); i.hasNext(); ) {
+      Photo photo = i.next();
+      photo.setOwnerLanguage(language);
+    }
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void setNotifyAboutPraise(boolean notify) {
-		notifyAboutPraise = notify;
+  /**
+   * @methodtype boolean query
+   */
+  public boolean getNotifyAboutPraise() {
+    return notifyAboutPraise;
+  }
 
-		for (Iterator<Photo> i = photos.iterator(); i.hasNext(); ) {
-			Photo photo = i.next();
-			photo.setOwnerNotifyAboutPraise(notifyAboutPraise);
-		}
+  /**
+   * @methodtype set
+   */
+  public void setNotifyAboutPraise(boolean notify) {
+    notifyAboutPraise = notify;
 
-		incWriteCount();
-	}
+    for (Iterator<Photo> i = photos.iterator(); i.hasNext(); ) {
+      Photo photo = i.next();
+      photo.setOwnerNotifyAboutPraise(notifyAboutPraise);
+    }
 
-	/**
-	 * @methodtype get
-	 */
-	public Gender getGender() {
-		return gender;
-	}
+    incWriteCount();
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void setGender(Gender newGender) {
-		gender = newGender;
-		incWriteCount();
-	}
+  /**
+   * @methodtype get
+   */
+  public Gender getGender() {
+    return gender;
+  }
 
-	/**
-	 * @methodtype boolean query
-	 */
-	public boolean isConfirmed() {
-		return getStatus().isConfirmed();
-	}
+  /**
+   * @methodtype set
+   */
+  public void setGender(Gender newGender) {
+    gender = newGender;
+    incWriteCount();
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public UserStatus getStatus() {
-		return status;
-	}
+  /**
+   * @methodtype boolean query
+   */
+  public boolean isConfirmed() {
+    return getStatus().isConfirmed();
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void setStatus(UserStatus newStatus) {
-		status = newStatus;
-		incWriteCount();
-	}
+  /**
+   * @methodtype get
+   */
+  public UserStatus getStatus() {
+    return status;
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void setConfirmed() {
-		setStatus(status.asConfirmed());
-		incWriteCount();
-	}
+  /**
+   * @methodtype set
+   */
+  public void setStatus(UserStatus newStatus) {
+    status = newStatus;
+    incWriteCount();
+  }
 
-	/**
-	 * @methodtype boolean query
-	 */
-	public boolean hasUserPhoto() {
-		return userPhoto != null;
-	}
+  /**
+   * @methodtype set
+   */
+  public void setConfirmed() {
+    setStatus(status.asConfirmed());
+    incWriteCount();
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public Photo getUserPhoto() {
-		return userPhoto;
-	}
+  /**
+   * @methodtype boolean query
+   */
+  public boolean hasUserPhoto() {
+    return userPhoto != null;
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void setUserPhoto(Photo newPhoto) {
-		userPhoto = newPhoto;
-		log.info("SetUserPhoto: " + newPhoto.getIdAsString());
-		incWriteCount();
-	}
+  /**
+   * @methodtype get
+   */
+  public Photo getUserPhoto() {
+    return userPhoto;
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public long getCreationTime() {
-		return creationTime;
-	}
+  /**
+   * @methodtype set
+   */
+  public void setUserPhoto(Photo newPhoto) {
+    userPhoto = newPhoto;
+    log.info("SetUserPhoto: " + newPhoto.getIdAsString());
+    incWriteCount();
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void addPhoto(Photo newPhoto) {
-		photos.add(newPhoto);
+  /**
+   * @methodtype get
+   */
+  public long getCreationTime() {
+    return creationTime;
+  }
 
-		newPhoto.setOwnerId(id);
-		newPhoto.setOwnerNotifyAboutPraise(notifyAboutPraise);
-		newPhoto.setOwnerEmailAddress(emailAddress);
-		newPhoto.setOwnerLanguage(language);
+  /**
+   * @methodtype set
+   */
+  public void addPhoto(Photo newPhoto) {
+    photos.add(newPhoto);
 
-		incWriteCount();
-	}
+    newPhoto.setOwnerId(id);
+    newPhoto.setOwnerNotifyAboutPraise(notifyAboutPraise);
+    newPhoto.setOwnerEmailAddress(emailAddress);
+    newPhoto.setOwnerLanguage(language);
 
-	/**
-	 * @methodtype set
-	 */
-	public void removePhoto(Photo notMyPhoto) {
-		photos.remove(notMyPhoto);
-		incWriteCount();
-	}
+    incWriteCount();
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public int getNoOfPhotos() {
-		return photos.size();
-	}
+  /**
+   * @methodtype set
+   */
+  public void removePhoto(Photo notMyPhoto) {
+    photos.remove(notMyPhoto);
+    incWriteCount();
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public Photo[] getPhotos() {
-		return getPhotosReverseOrderedByPraise();
-	}
+  /**
+   * @methodtype get
+   */
+  public int getNoOfPhotos() {
+    return photos.size();
+  }
 
-	/**
-	 * @methodtype conversion
-	 */
-	public Photo[] getPhotosReverseOrderedByPraise() {
-		Photo[] result = photos.toArray(new Photo[0]);
-		Arrays.sort(result, getPhotoByPraiseReverseComparator());
-		return result;
-	}
+  /**
+   * @methodtype get
+   */
+  public Photo[] getPhotos() {
+    return getPhotosReverseOrderedByPraise();
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public static Comparator<Photo> getPhotoByPraiseReverseComparator() {
-		return new Comparator<Photo>() {
-			public int compare(Photo p1, Photo p2) {
-				double sc1 = p1.getPraise();
-				double sc2 = p2.getPraise();
-				if (sc1 == sc2) {
-					String id1 = String.valueOf(p1.getId());
-					String id2 = String.valueOf(p2.getId());
-					return id1.compareTo(id2);
-				} else if (sc1 < sc2) {
-					return 1;
-				} else {
-					return -1;
-				}
-			}
-		};
-	}
+  /**
+   * @methodtype conversion
+   */
+  public Photo[] getPhotosReverseOrderedByPraise() {
+    Photo[] result = photos.toArray(new Photo[0]);
+    Arrays.sort(result, getPhotoByPraiseReverseComparator());
+    return result;
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void setUploadedImage(Image image) {
-		uploadedImage = image;
-	}
+  /**
+   * @methodtype get
+   */
+  public Image getUploadedImage() {
+    return uploadedImage;
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public Image getUploadedImage() {
-		return uploadedImage;
-	}
+  /**
+   * @methodtype set
+   */
+  public void setUploadedImage(Image image) {
+    uploadedImage = image;
+  }
 }

@@ -26,10 +26,13 @@ import org.wahlzeit.model.CartesianCoordinate;
 import org.wahlzeit.model.Coordinate;
 import org.wahlzeit.model.SphericCoordinate;
 import org.wahlzeit.utils.ParameterUtil;
+import org.wahlzeit.utils.doc.DesignPattern;
+import org.wahlzeit.utils.doc.pattern.PatternType;
 
 /**
  * This class provides conversion between different coordinate implementations
  */
+@DesignPattern(PatternType.SERVICE_LOCATOR)
 public class CoordinateConverter {
 
 

@@ -26,32 +26,32 @@ package org.wahlzeit.webparts;
  */
 public class WebValue {
 
-	/**
-	 *
-	 */
-	protected String checkedKey = "";
-	protected String selectedKey = "";
+  /**
+   *
+   */
+  protected String checkedKey = "";
+  protected String selectedKey = "";
 
-	/**
-	 *
-	 */
-	public WebValue(String myCheckedKey, String mySelectedKey) {
-		checkedKey = myCheckedKey;
-		selectedKey = mySelectedKey;
-	}
+  /**
+   *
+   */
+  public WebValue(String myCheckedKey, String mySelectedKey) {
+    checkedKey = myCheckedKey;
+    selectedKey = mySelectedKey;
+  }
 
-	/**
-	 *
-	 */
-	public String getCheckedKey() {
-		return checkedKey;
-	}
+  /**
+   *
+   */
+  public String getCheckedKey() {
+    return checkedKey;
+  }
 
-	/**
-	 *
-	 */
-	public String getSelectedKey() {
-		return selectedKey;
-	}
+  /**
+   *
+   */
+  public String getSelectedKey() {
+    return selectedKey;
+  }
 
 }

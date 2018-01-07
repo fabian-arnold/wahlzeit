@@ -31,29 +31,29 @@ import java.io.IOException;
  */
 public interface Configuration {
 
-	/**
-	 *
-	 */
-	boolean hasKey(String key);
+  /**
+   *
+   */
+  boolean hasKey(String key);
 
-	/**
-	 *
-	 */
-	String getValue(String key) throws IllegalArgumentException;
+  /**
+   *
+   */
+  String getValue(String key) throws IllegalArgumentException;
 
-	/**
-	 *
-	 */
-	void setValue(String key, String value) throws IllegalArgumentException;
+  /**
+   *
+   */
+  void setValue(String key, String value) throws IllegalArgumentException;
 
-	/**
-	 *
-	 */
-	void loadProperties(String fileName) throws IllegalArgumentException, IOException;
+  /**
+   *
+   */
+  void loadProperties(String fileName) throws IllegalArgumentException, IOException;
 
-	/**
-	 *
-	 */
-	void loadProperties(File file) throws IOException;
+  /**
+   *
+   */
+  void loadProperties(File file) throws IOException;
 
 }

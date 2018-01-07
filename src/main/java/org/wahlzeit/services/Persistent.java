@@ -26,19 +26,19 @@ package org.wahlzeit.services;
  */
 public interface Persistent {
 
-	/**
-	 *
-	 */
-	boolean isDirty();
+  /**
+   *
+   */
+  boolean isDirty();
 
-	/**
-	 *
-	 */
-	void incWriteCount();
+  /**
+   *
+   */
+  void incWriteCount();
 
-	/**
-	 *
-	 */
-	void resetWriteCount();
+  /**
+   *
+   */
+  void resetWriteCount();
 
 }

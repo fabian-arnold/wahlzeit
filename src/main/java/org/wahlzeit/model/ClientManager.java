@@ -1,251 +1,246 @@
 package org.wahlzeit.model;
 
-import org.wahlzeit.services.LogBuilder;
-import org.wahlzeit.services.ObjectManager;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.wahlzeit.services.LogBuilder;
+import org.wahlzeit.services.ObjectManager;
 
 /**
  * Abstract super class for UserManager. Contains all members and methods that can be offered for all Clients.
- * 
+ *
  * @review
  */
 public abstract class ClientManager extends ObjectManager {
 
-	private static final Logger log = Logger.getLogger(ClientManager.class.getName());
+  private static final Logger log = Logger.getLogger(ClientManager.class.getName());
 
-	/**
-	 *
-	 */
-	protected static Long lastClientId = 0L;
+  /**
+   *
+   */
+  protected static Long lastClientId = 0L;
 
-	/**
-	 * Maps IDs to user
-	 */
-	protected Map<String, Client> idClientMap = new HashMap<String, Client>();
+  /**
+   * Maps IDs to user
+   */
+  protected Map<String, Client> idClientMap = new HashMap<String, Client>();
 
-	protected HashMap<String, Client> httpSessionIdToClientMap = new HashMap<String, Client>();
+  protected HashMap<String, Client> httpSessionIdToClientMap = new HashMap<String, Client>();
 
-	protected List<String> listOfUsedNicknames = new ArrayList<String>();
+  protected List<String> listOfUsedNicknames = new ArrayList<String>();
 
+  // add methods -----------------------------------------------------------------------------------------------------
 
-	// add methods -----------------------------------------------------------------------------------------------------
+  /**
+   * @methodtype set
+   * @methodproperty wrapper
+   */
+  public void addClient(Client client) throws IllegalArgumentException {
+    assertIsNonNullArgument(client);
+    assertIsUnknownClientAsIllegalArgument(client);
+    assertNicknameIsNotUsed(client.getNickName());
 
-	/**
-	 * @methodtype set
-	 * @methodproperty wrapper
-	 */
-	public void addClient(Client client) throws IllegalArgumentException {
-		assertIsNonNullArgument(client);
-		assertIsUnknownClientAsIllegalArgument(client);
-		assertNicknameIsNotUsed(client.getNickName());
+    doAddClient(client);
+  }
 
-		doAddClient(client);
-	}
+  /**
+   * @methodtype assertion
+   */
+  protected void assertIsUnknownClientAsIllegalArgument(Client client) {
+    if (hasClientById(client.getId())) {
+      throw new IllegalArgumentException(client.getId() + "is already known");
+    }
+  }
 
-	/**
-	 * @methodtype assertion
-	 */
-	protected void assertIsUnknownClientAsIllegalArgument(Client client) {
-		if (hasClientById(client.getId())) {
-			throw new IllegalArgumentException(client.getId() + "is already known");
-		}
-	}
+  /**
+   * @methodtype assertion
+   */
+  protected void assertNicknameIsNotUsed(String nickName) {
+    if (listOfUsedNicknames.contains(nickName)) {
+      throw new IllegalArgumentException("Nickname " + nickName + " is already used.");
+    }
+  }
 
-	/**
-	 * @methodtype assertion
-	 */
-	protected void assertNicknameIsNotUsed(String nickName) {
-		if (listOfUsedNicknames.contains(nickName)) {
-			throw new IllegalArgumentException("Nickname " + nickName + " is already used.");
-		}
-	}
+  /**
+   * @methodtype set
+   * @methodproperty primitive
+   */
+  protected void doAddClient(Client client) {
+    idClientMap.put(client.getId(), client);
+    writeObject(client);
+    listOfUsedNicknames.add(client.getNickName());
+    log.config(
+        LogBuilder.createSystemMessage().addParameter("Added new user", client.getId()).toString());
+  }
 
-	/**
-	 * @methodtype set
-	 * @methodproperty primitive
-	 */
-	protected void doAddClient(Client client) {
-		idClientMap.put(client.getId(), client);
-		writeObject(client);
-		listOfUsedNicknames.add(client.getNickName());
-		log.config(LogBuilder.createSystemMessage().addParameter("Added new user", client.getId()).toString());
-	}
+  /**
+   * @methodtype boolean query
+   */
+  public boolean hasClientById(String id) {
+    assertIsNonNullArgument(id, "user by Id");
+    return getClientById(id) != null;
+  }
 
-	/**
-	 * @methodtype boolean query
-	 */
-	public boolean hasClientById(String id) {
-		assertIsNonNullArgument(id, "user by Id");
-		return getClientById(id) != null;
-	}
+  // get client methods ----------------------------------------------------------------------------------------------
 
+  /**
+   * @methodtype get
+   * @methodproperty wrapper
+   */
+  public Client getClientById(String name) {
+    assertIsNonNullArgument(name, "user name");
 
-	// get client methods ----------------------------------------------------------------------------------------------
+    Client result = doGetClientById(name);
 
-	/**
-	 * @methodtype get
-	 * @methodproperty wrapper
-	 */
-	public Client getClientById(String name) {
-		assertIsNonNullArgument(name, "user name");
+    return result;
+  }
 
-		Client result = doGetClientById(name);
+  /**
+   * @methodtype get
+   * @methodproperty primitive
+   */
+  protected Client doGetClientById(String name) {
+    return idClientMap.get(name);
+  }
 
-		return result;
-	}
+  /**
+   * @methodtype set
+   */
+  public void addHttpSessionIdToClientMapping(String httpSessionId, Client client) {
+    assertIsNonNullArgument(httpSessionId);
+    assertIsNonNullArgument(client);
+    assert !httpSessionIdToClientMap.containsKey(httpSessionId);
 
-	/**
-	 * @methodtype get
-	 * @methodproperty primitive
-	 */
-	protected Client doGetClientById(String name) {
-		return idClientMap.get(name);
-	}
+    doAddHttpSessionIdToClientMapping(httpSessionId, client);
 
-	/**
-	 * @methodtype set
-	 */
-	public void addHttpSessionIdToClientMapping(String httpSessionId, Client client) {
-		assertIsNonNullArgument(httpSessionId);
-		assertIsNonNullArgument(client);
-		assert !httpSessionIdToClientMap.containsKey(httpSessionId);
+    saveClient(client);
+  }
 
-		doAddHttpSessionIdToClientMapping(httpSessionId, client);
+  /**
+   * @methodtype set
+   */
+  public void doAddHttpSessionIdToClientMapping(String httpSessionId, Client client) {
+    httpSessionIdToClientMap.put(httpSessionId, client);
+    client.setHttpSessionId(httpSessionId);
+    log.config(LogBuilder.createSystemMessage().
+        addParameter("client name", client.getNickName()).
+        addParameter("httpSessionId", httpSessionId).toString());
+  }
 
-		saveClient(client);
-	}
+  // has client method -----------------------------------------------------------------------------------------------
 
-	/**
-	 * @methodtype set
-	 */
-	public void doAddHttpSessionIdToClientMapping(String httpSessionId, Client client) {
-		httpSessionIdToClientMap.put(httpSessionId, client);
-		client.setHttpSessionId(httpSessionId);
-		log.config(LogBuilder.createSystemMessage().
-				addParameter("client name", client.getNickName()).
-				addParameter("httpSessionId", httpSessionId).toString());
-	}
+  /**
+   * @methodtype command
+   */
+  public void saveClient(Client client) {
+    updateObject(client);
+  }
 
+  // save methods ----------------------------------------------------------------------------------------------------
 
-	// has client method -----------------------------------------------------------------------------------------------
+  /**
+   * @methodtype get
+   */
+  public Client getClientByHttpSessionId(String httpSessionId) {
+    assertIsNonNullArgument(httpSessionId);
 
-	/**
-	 * @methodtype command
-	 */
-	public void saveClient(Client client) {
-		updateObject(client);
-	}
+    return httpSessionIdToClientMap.get(httpSessionId);
+  }
 
+  /**
+   * @methodtype command
+   */
+  public void saveClients() {
+    updateObjects(idClientMap.values());
+  }
 
-	// save methods ----------------------------------------------------------------------------------------------------
+  // client ID methods -----------------------------------------------------------------------------------------------
 
-	/**
-	 * @methodtype get
-	 */
-	public Client getClientByHttpSessionId(String httpSessionId) {
-		assertIsNonNullArgument(httpSessionId);
+  /**
+   * @methodtype get
+   */
+  public Long getLastClientId() {
+    return lastClientId;
+  }
 
-		return httpSessionIdToClientMap.get(httpSessionId);
-	}
+  /**
+   * @methodtype set
+   */
+  public synchronized void setLastClientId(Long newId) {
+    lastClientId = newId;
+  }
 
-	/**
-	 * @methodtype command
-	 */
-	public void saveClients() {
-		updateObjects(idClientMap.values());
-	}
+  /**
+   * @methodtype get
+   */
+  public synchronized Long getNextClientId() {
+    return ++lastClientId;
+  }
 
+  // delete methods --------------------------------------------------------------------------------------------------
 
-	// client ID methods -----------------------------------------------------------------------------------------------
+  /**
+   * @methodtype set
+   */
+  public void removeClient(Client client) {
+    saveClient(client);
+    idClientMap.remove(client.getId());
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public Long getLastClientId() {
-		return lastClientId;
-	}
+  /**
+   * @methodtype set
+   * @methodproperty wrapper
+   */
+  public void deleteClient(Client client) {
+    assertIsNonNullArgument(client);
+    assert idClientMap.containsValue(client);
 
-	/**
-	 * @methodtype set
-	 */
-	public synchronized void setLastClientId(Long newId) {
-		lastClientId = newId;
-	}
+    removeHttpSessionIdToClientMapping(client.getHttpSessionId());
+    doDeleteClient(client);
 
-	/**
-	 * @methodtype get
-	 */
-	public synchronized Long getNextClientId() {
-		return ++lastClientId;
-	}
+    assertIsUnknownUserAsIllegalState(client);
+  }
 
+  /**
+   * @methodtype set
+   */
+  private void removeHttpSessionIdToClientMapping(String httpSessionId) {
+    Client client = httpSessionIdToClientMap.get(httpSessionId);
+    client.removeHttpSessionId();
 
-	// delete methods --------------------------------------------------------------------------------------------------
+    httpSessionIdToClientMap.remove(httpSessionId);
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void removeClient(Client client) {
-		saveClient(client);
-		idClientMap.remove(client.getId());
-	}
+  /**
+   * @methodtype set
+   * @methodproperty primtive
+   */
+  protected void doDeleteClient(Client client) {
+    idClientMap.remove(client.getId());
+    deleteObject(client);
+  }
 
-	/**
-	 * @methodtype set
-	 * @methodproperty wrapper
-	 */
-	public void deleteClient(Client client) {
-		assertIsNonNullArgument(client);
-		assert idClientMap.containsValue(client);
+  /**
+   * @methodtype assertion
+   */
+  protected void assertIsUnknownUserAsIllegalState(Client client) {
+    if (hasClientById(client.getId())) {
+      throw new IllegalStateException(client.getId() + "should not be known");
+    }
+  }
 
-		removeHttpSessionIdToClientMapping(client.getHttpSessionId());
-		doDeleteClient(client);
+  // update methods --------------------------------------------------------------------------------------------------
 
-		assertIsUnknownUserAsIllegalState(client);
-	}
+  /**
+   * @methodtype set
+   */
+  public void changeNickname(String oldNickName, String newNickName)
+      throws IllegalArgumentException {
+    assertNicknameIsNotUsed(newNickName);
 
-	/**
-	 * @methodtype set
-	 */
-	private void removeHttpSessionIdToClientMapping(String httpSessionId) {
-		Client client = httpSessionIdToClientMap.get(httpSessionId);
-		client.removeHttpSessionId();
-
-		httpSessionIdToClientMap.remove(httpSessionId);
-	}
-
-	/**
-	 * @methodtype set
-	 * @methodproperty primtive
-	 */
-	protected void doDeleteClient(Client client) {
-		idClientMap.remove(client.getId());
-		deleteObject(client);
-	}
-
-	/**
-	 * @methodtype assertion
-	 */
-	protected void assertIsUnknownUserAsIllegalState(Client client) {
-		if (hasClientById(client.getId())) {
-			throw new IllegalStateException(client.getId() + "should not be known");
-		}
-	}
-
-	// update methods --------------------------------------------------------------------------------------------------
-
-	/**
-	 * @methodtype set
-	 */
-	public void changeNickname(String oldNickName, String newNickName) throws IllegalArgumentException {
-		assertNicknameIsNotUsed(newNickName);
-
-		listOfUsedNicknames.remove(oldNickName);
-		listOfUsedNicknames.add(newNickName);
-	}
+    listOfUsedNicknames.remove(oldNickName);
+    listOfUsedNicknames.add(newNickName);
+  }
 }

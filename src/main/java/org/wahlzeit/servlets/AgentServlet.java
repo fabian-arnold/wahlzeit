@@ -20,44 +20,45 @@
 
 package org.wahlzeit.servlets;
 
-import org.wahlzeit.agents.AgentManager;
-import org.wahlzeit.services.LogBuilder;
-
+import java.io.IOException;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.logging.Logger;
+import org.wahlzeit.agents.AgentManager;
+import org.wahlzeit.services.LogBuilder;
 
 /**
  * A servlet class for asynchronous ("agent") tasks.
  */
 public class AgentServlet extends HttpServlet {
 
-	private static Logger log = Logger.getLogger(AgentServlet.class.getName());
+  private static Logger log = Logger.getLogger(AgentServlet.class.getName());
 
-	/**
-	 * @methodtype command
-	 */
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+  /**
+   * @methodtype command
+   */
+  @Override
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
 
-		String requestUri = request.getRequestURI();
-		int nameStart = requestUri.lastIndexOf("/") + 1;
-		int nameEnd = requestUri.length();
-		String agentName = requestUri.substring(nameStart, nameEnd);
-		log.config(LogBuilder.createSystemMessage().addParameter("agent name", agentName).toString());
+    String requestUri = request.getRequestURI();
+    int nameStart = requestUri.lastIndexOf("/") + 1;
+    int nameEnd = requestUri.length();
+    String agentName = requestUri.substring(nameStart, nameEnd);
+    log.config(LogBuilder.createSystemMessage().addParameter("agent name", agentName).toString());
 
-		try {
-			AgentManager.getInstance().startAgent(agentName);
-			response.setStatus(200);
-		} catch (Exception e) {
-			log.warning(LogBuilder.createSystemMessage().addException("Problem when starting the agent", e).toString());
-			response.setStatus(299);
-		}
-	}
+    try {
+      AgentManager.getInstance().startAgent(agentName);
+      response.setStatus(200);
+    } catch (Exception e) {
+      log.warning(
+          LogBuilder.createSystemMessage().addException("Problem when starting the agent", e)
+              .toString());
+      response.setStatus(299);
+    }
+  }
 
 
 }

@@ -25,229 +25,223 @@ import java.util.Random;
 
 /**
  * A photo id identifies a photo with a unique number.
- * The number has an equivalent string for web access. 
+ * The number has an equivalent string for web access.
  * This class also hands out the ids.
  */
 public class PhotoId implements Serializable {
 
-	/**
-	 * 0 is never returned from nextValue; first value is 1
-	 */
-	protected static int currentId = 0;
+  /**
+   *
+   */
+  public static final int BUFFER_SIZE_INCREMENT = 64;
+  /**
+   *
+   */
+  public static final PhotoId NULL_ID = new PhotoId(0);
+  /**
+   * What a hack :-)
+   */
+  public static final int ID_START = getFromString("x1abz") + 1;
+  /**
+   * 0 is never returned from nextValue; first value is 1
+   */
+  protected static int currentId = 0;
+  /**
+   *
+   */
+  protected static PhotoId[] ids = new PhotoId[BUFFER_SIZE_INCREMENT];
+  /**
+   *
+   */
+  protected static Random randomNumber = new Random(System.currentTimeMillis());
+  /**
+   *
+   */
+  protected int value = 0;
+  protected String stringValue = null;
 
-	/**
-	 *
-	 */
-	public static final int BUFFER_SIZE_INCREMENT = 64;
+  private PhotoId() {
+    // do nothing, necessary for Objectify to load PhotoIds
+  }
 
-	/**
-	 *
-	 */
-	public static final PhotoId NULL_ID = new PhotoId(0);
+  /**
+   *
+   */
+  protected PhotoId(int myValue) {
+    value = myValue;
+    stringValue = getFromInt(myValue);
+  }
 
-	/**
-	 *
-	 */
-	protected static PhotoId[] ids = new PhotoId[BUFFER_SIZE_INCREMENT];
+  /**
+   *
+   */
+  public static int getCurrentIdAsInt() {
+    return currentId;
+  }
 
-	/**
-	 * What a hack :-)
-	 */
-	public static final int ID_START = getFromString("x1abz") + 1;
+  /**
+   *
+   */
+  public static synchronized void setCurrentIdFromInt(int id) {
+    currentId = id;
+    ids = new PhotoId[currentId + BUFFER_SIZE_INCREMENT];
+    ids[0] = NULL_ID;
+  }
 
-	/**
-	 *
-	 */
-	protected static Random randomNumber = new Random(System.currentTimeMillis());
+  /**
+   *
+   */
+  public static synchronized int getNextIdAsInt() {
+    currentId += 1;
+    if (currentId >= ids.length) {
+      PhotoId[] nids = new PhotoId[currentId + BUFFER_SIZE_INCREMENT];
+      System.arraycopy(ids, 0, nids, 0, currentId);
+      ids = nids;
+    }
+    return currentId;
+  }
 
-	private PhotoId() {
-		// do nothing, necessary for Objectify to load PhotoIds
-	}
+  /**
+   *
+   */
+  public static PhotoId getIdFromInt(int id) {
+    if ((id < 0) || (id > currentId)) {
+      return NULL_ID;
+    }
 
-	/**
-	 *
-	 */
-	public static int getCurrentIdAsInt() {
-		return currentId;
-	}
+    // @FIXME http://en.wikipedia.org/wiki/Double-checked_locking
+    PhotoId result = ids[id];
+    if (result == null) {
+      synchronized (ids) {
+        result = ids[id];
+        if (result == null) {
+          result = new PhotoId(id);
+          ids[id] = result;
+        }
+      }
+    }
 
-	/**
-	 *
-	 */
-	public static synchronized void setCurrentIdFromInt(int id) {
-		currentId = id;
-		ids = new PhotoId[currentId + BUFFER_SIZE_INCREMENT];
-		ids[0] = NULL_ID;
-	}
+    return result;
+  }
 
-	/**
-	 *
-	 */
-	public static synchronized int getNextIdAsInt() {
-		currentId += 1;
-		if (currentId >= ids.length) {
-			PhotoId[] nids = new PhotoId[currentId + BUFFER_SIZE_INCREMENT];
-			System.arraycopy(ids, 0, nids, 0, currentId);
-			ids = nids;
-		}
-		return currentId;
-	}
+  /**
+   *
+   */
+  public static PhotoId getIdFromString(String id) {
+    return getIdFromInt(getFromString(id));
+  }
 
-	/**
-	 *
-	 */
-	public static PhotoId getIdFromInt(int id) {
-		if ((id < 0) || (id > currentId)) {
-			return NULL_ID;
-		}
+  /**
+   *
+   */
+  public static PhotoId getNextId() {
+    return getIdFromInt(getNextIdAsInt());
+  }
 
-		// @FIXME http://en.wikipedia.org/wiki/Double-checked_locking
-		PhotoId result = ids[id];
-		if (result == null) {
-			synchronized (ids) {
-				result = ids[id];
-				if (result == null) {
-					result = new PhotoId(id);
-					ids[id] = result;
-				}
-			}
-		}
+  /**
+   *
+   */
+  public static PhotoId getRandomId() {
+    int max = getCurrentIdAsInt() - 1;
+    int id = randomNumber.nextInt();
+    id = (id == Integer.MIN_VALUE) ? id++ : id;
+    id = (Math.abs(id) % max) + 1;
+    return getIdFromInt(id);
+  }
 
-		return result;
-	}
+  /**
+   *
+   */
+  public static String getFromInt(int id) {
+    StringBuffer result = new StringBuffer(10);
 
-	/**
-	 *
-	 */
-	public static PhotoId getIdFromString(String id) {
-		return getIdFromInt(getFromString(id));
-	}
+    id += ID_START;
+    for (; id > 0; id = id / 36) {
+      char letterOrDigit;
+      int modulus = id % 36;
+      if (modulus < 10) {
+        letterOrDigit = (char) ((int) '0' + modulus);
+      } else {
+        letterOrDigit = (char) ((int) 'a' - 10 + modulus);
+      }
+      result.insert(0, letterOrDigit);
 
-	/**
-	 *
-	 */
-	public static PhotoId getNextId() {
-		return getIdFromInt(getNextIdAsInt());
-	}
+    }
 
-	/**
-	 *
-	 */
-	public static PhotoId getRandomId() {
-		int max = getCurrentIdAsInt() - 1;
-		int id = randomNumber.nextInt();
-		id = (id == Integer.MIN_VALUE) ? id++ : id;
-		id = (Math.abs(id) % max) + 1;
-		return getIdFromInt(id);
-	}
+    return "x" + result.toString();
+  }
 
-	/**
-	 *
-	 */
-	protected int value = 0;
-	protected String stringValue = null;
+  /**
+   *
+   */
+  public static int getFromString(String value) {
+    int result = 0;
+    for (int i = 1; i < value.length(); i++) {
+      int temp = 0;
+      char letterOrDigit = value.charAt(i);
+      if (letterOrDigit < 'a') {
+        temp = (int) letterOrDigit - '0';
+      } else {
+        temp = 10 + (int) letterOrDigit - 'a';
+      }
+      result = result * 36 + temp;
+    }
 
-	/**
-	 *
-	 */
-	protected PhotoId(int myValue) {
-		value = myValue;
-		stringValue = getFromInt(myValue);
-	}
+    result -= ID_START;
+    if (result < 0) {
+      result = 0;
+    }
 
-	/**
-	 *
-	 */
-	public boolean equals(Object o) {
-		// @FIXME
+    return result;
+  }
 
-		if (!(o instanceof PhotoId)) {
-			return false;
-		}
+  /**
+   *
+   */
+  public boolean equals(Object o) {
+    // @FIXME
 
-		PhotoId pid = (PhotoId) o;
-		return isEqual(pid);
-	}
+    if (!(o instanceof PhotoId)) {
+      return false;
+    }
 
-	/**
-	 *
-	 */
-	public boolean isEqual(PhotoId other) {
-		return other.value == value;
-	}
+    PhotoId pid = (PhotoId) o;
+    return isEqual(pid);
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public int hashCode() {
-		return value;
-	}
+  /**
+   *
+   */
+  public boolean isEqual(PhotoId other) {
+    return other.value == value;
+  }
 
-	/**
-	 *
-	 */
-	public boolean isNullId() {
-		return this == NULL_ID;
-	}
+  /**
+   * @methodtype get
+   */
+  public int hashCode() {
+    return value;
+  }
 
-	/**
-	 *
-	 */
-	public int asInt() {
-		return value;
-	}
+  /**
+   *
+   */
+  public boolean isNullId() {
+    return this == NULL_ID;
+  }
 
-	/**
-	 *
-	 */
-	public String asString() {
-		return stringValue;
-	}
+  /**
+   *
+   */
+  public int asInt() {
+    return value;
+  }
 
-	/**
-	 *
-	 */
-	public static String getFromInt(int id) {
-		StringBuffer result = new StringBuffer(10);
-
-		id += ID_START;
-		for (; id > 0; id = id / 36) {
-			char letterOrDigit;
-			int modulus = id % 36;
-			if (modulus < 10) {
-				letterOrDigit = (char) ((int) '0' + modulus);
-			} else {
-				letterOrDigit = (char) ((int) 'a' - 10 + modulus);
-			}
-			result.insert(0, letterOrDigit);
-
-		}
-
-		return "x" + result.toString();
-	}
-
-	/**
-	 *
-	 */
-	public static int getFromString(String value) {
-		int result = 0;
-		for (int i = 1; i < value.length(); i++) {
-			int temp = 0;
-			char letterOrDigit = value.charAt(i);
-			if (letterOrDigit < 'a') {
-				temp = (int) letterOrDigit - '0';
-			} else {
-				temp = 10 + (int) letterOrDigit - 'a';
-			}
-			result = result * 36 + temp;
-		}
-
-		result -= ID_START;
-		if (result < 0) {
-			result = 0;
-		}
-
-		return result;
-	}
+  /**
+   *
+   */
+  public String asString() {
+    return stringValue;
+  }
 
 }

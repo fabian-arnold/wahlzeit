@@ -20,71 +20,69 @@
 
 package org.wahlzeit.agents;
 
-import org.wahlzeit.services.LogBuilder;
-
 import java.util.logging.Logger;
+import org.wahlzeit.services.LogBuilder;
 
 /**
  * An Agent executes background tasks.
  */
 public abstract class Agent {
 
-	private static Logger log = Logger.getLogger(Agent.class.getName());
+  /**
+   *
+   */
+  protected static int id = 0;
+  private static Logger log = Logger.getLogger(Agent.class.getName());
+  /**
+   *
+   */
+  protected String name = "no name";
 
-	/**
-	 *
-	 */
-	protected static int id = 0;
+  /**
+   *
+   */
+  protected Agent() {
+    // do nothing
+  }
 
-	/**
-	 *
-	 */
-	protected String name = "no name";
+  /**
+   * @methodtype initialization
+   */
+  protected void initialize(String myName) {
+    name = myName;
+  }
 
-	/**
-	 *
-	 */
-	protected Agent() {
-		// do nothing
-	}
+  /**
+   * @methodtype get
+   */
+  public String getName() {
+    return name;
+  }
 
-	/**
-	 * @methodtype initialization
-	 */
-	protected void initialize(String myName) {
-		name = myName;
-	}
+  /**
+   * @methodtype command
+   */
+  public void run() {
+    synchronized (Agent.class) {
+      String agentName = "agent" + id++;
+      log.config(LogBuilder.createSystemMessage().addAction("started new agent")
+          .addParameter("name", agentName)
+          .addParameter("ID", id).toString());
+    }
 
-	/**
-	 * @methodtype get
-	 */
-	public String getName() {
-		return name;
-	}
+    try {
+      doRun();
+    } catch (Exception e) {
+      log.config(LogBuilder.createSystemMessage().addParameter("agent name", name).addException(
+          "Problem when executing task", e).toString());
+    }
+  }
 
-	/**
-	 * @methodtype command
-	 */
-	public void run() {
-		synchronized (Agent.class) {
-			String agentName = "agent" + id++;
-			log.config(LogBuilder.createSystemMessage().addAction("started new agent").addParameter("name", agentName)
-					.addParameter("ID", id).toString());
-		}
-
-		try {
-			doRun();
-		} catch (Exception e) {
-			log.config(LogBuilder.createSystemMessage().addParameter("agent name", name).addException(
-					"Problem when executing task", e).toString());
-		}
-	}
-
-	/**
-	 * @methodproperty hook
-	 */
-	protected void doRun() {
-		// do nothing
-	}
+  /**
+   * @methodproperty hook
+   */
+  protected void doRun() {
+    // do nothing
+  }
 
 }

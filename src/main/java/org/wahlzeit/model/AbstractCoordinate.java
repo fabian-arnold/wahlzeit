@@ -24,6 +24,8 @@ package org.wahlzeit.model;
 import org.wahlzeit.model.converter.CoordinateConverter;
 import org.wahlzeit.model.converter.UnsupportedConversionException;
 import org.wahlzeit.utils.ParameterUtil;
+import org.wahlzeit.utils.doc.DesignPattern;
+import org.wahlzeit.utils.doc.pattern.PatternType;
 
 /**
  * Provides the base implementation of a coordinate. The implementation itself should follow
@@ -32,6 +34,8 @@ import org.wahlzeit.utils.ParameterUtil;
  * @see SphericCoordinate
  * @see CartesianCoordinate
  */
+@DesignPattern(value = PatternType.PROTOTYPE,
+    participants = {CartesianCoordinate.class, SphericCoordinate.class, NoWhereCoordinate.class})
 public abstract class AbstractCoordinate implements Coordinate {
 
   /**

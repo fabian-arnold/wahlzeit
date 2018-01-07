@@ -29,100 +29,98 @@ import org.wahlzeit.utils.EnumValue;
  */
 public enum AccessRights implements EnumValue {
 
-	/**
-	 *
-	 */
-	NONE(0), GUEST(1), USER(2), MODERATOR(3), ADMINISTRATOR(4);
+  /**
+   *
+   */
+  NONE(0), GUEST(1), USER(2), MODERATOR(3), ADMINISTRATOR(4);
 
-	/**
-	 *
-	 */
-	private static AccessRights[] allValues = {
-			NONE, GUEST, USER, MODERATOR, ADMINISTRATOR
-	};
+  /**
+   *
+   */
+  private static final String[] valueNames = {
+      "none", "guest", "user", "moderator", "administrator"
+  };
+  /**
+   *
+   */
+  private static AccessRights[] allValues = {
+      NONE, GUEST, USER, MODERATOR, ADMINISTRATOR
+  };
+  /**
+   *
+   */
+  private int value;
 
-	/**
-	 *
-	 */
-	public static AccessRights getFromInt(int myValue) throws IllegalArgumentException {
-		assertIsValidIntValue(myValue);
-		return allValues[myValue];
-	}
+  /**
+   *
+   */
+  AccessRights(int myValue) {
+    value = myValue;
+  }
 
-	/**
-	 *
-	 */
-	private static final String[] valueNames = {
-			"none", "guest", "user", "moderator", "administrator"
-	};
+  /**
+   *
+   */
+  public static AccessRights getFromInt(int myValue) throws IllegalArgumentException {
+    assertIsValidIntValue(myValue);
+    return allValues[myValue];
+  }
 
-	/**
-	 *
-	 */
-	public static AccessRights getFromString(String myRights) throws IllegalArgumentException {
-		for (AccessRights rights : AccessRights.values()) {
-			if (valueNames[rights.asInt()].equals(myRights)) {
-				return rights;
-			}
-		}
+  /**
+   *
+   */
+  public static AccessRights getFromString(String myRights) throws IllegalArgumentException {
+    for (AccessRights rights : AccessRights.values()) {
+      if (valueNames[rights.asInt()].equals(myRights)) {
+        return rights;
+      }
+    }
 
-		throw new IllegalArgumentException("invalid AccessRight string: " + myRights);
-	}
+    throw new IllegalArgumentException("invalid AccessRight string: " + myRights);
+  }
 
-	/**
-	 *
-	 */
-	private int value;
+  /**
+   * @methodtype comparison
+   */
+  public static boolean hasRights(AccessRights a, AccessRights b) {
+    return a.value >= b.value;
+  }
 
-	/**
-	 *
-	 */
-	AccessRights(int myValue) {
-		value = myValue;
-	}
+  /**
+   * @methodtype assertion
+   */
+  private static void assertIsValidIntValue(int myValue) {
+    if ((myValue < 0) || (myValue > 4)) {
+      throw new IllegalArgumentException("invalid AccessRights int: " + myValue);
+    }
+  }
 
-	/**
-	 * @methodtype conversion
-	 */
-	public int asInt() {
-		return value;
-	}
+  /**
+   * @methodtype conversion
+   */
+  public int asInt() {
+    return value;
+  }
 
-	/**
-	 * @methodtype conversion
-	 */
-	public String asString() {
-		return valueNames[value];
-	}
+  /**
+   * @methodtype conversion
+   */
+  public String asString() {
+    return valueNames[value];
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public AccessRights[] getAllValues() {
-		return allValues;
-	}
+  /**
+   * @methodtype get
+   */
+  public AccessRights[] getAllValues() {
+    return allValues;
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public String getTypeName() {
-		return "AccessRights";
-	}
-
-	/**
-	 * @methodtype comparison
-	 */
-	public static boolean hasRights(AccessRights a, AccessRights b) {
-		return a.value >= b.value;
-	}
-
-	/**
-	 * @methodtype assertion
-	 */
-	private static void assertIsValidIntValue(int myValue) {
-		if ((myValue < 0) || (myValue > 4)) {
-			throw new IllegalArgumentException("invalid AccessRights int: " + myValue);
-		}
-	}
+  /**
+   * @methodtype get
+   */
+  public String getTypeName() {
+    return "AccessRights";
+  }
 
 }

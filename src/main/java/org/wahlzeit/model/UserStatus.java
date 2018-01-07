@@ -29,143 +29,141 @@ import org.wahlzeit.utils.EnumValue;
  */
 public enum UserStatus implements EnumValue {
 
-	/**
-	 *
-	 */
-	CREATED(0), // no bit set
-	CONFIRMED(1), // only confirmed bit set
-	DISABLED(2), DISABLED2(3); // disabled without or with confirmed bit set
+  /**
+   *
+   */
+  CREATED(0), // no bit set
+  CONFIRMED(1), // only confirmed bit set
+  DISABLED(2), DISABLED2(3); // disabled without or with confirmed bit set
 
-	/**
-	 *
-	 */
-	public static final int CONFIRMED_BIT = 0;
-	public static final int DISABLED_BIT = 1;
+  /**
+   *
+   */
+  public static final int CONFIRMED_BIT = 0;
+  public static final int DISABLED_BIT = 1;
 
-	/**
-	 * All possible states of UserStatus
-	 */
-	private static UserStatus[] allValues = {
-			CREATED, CONFIRMED, DISABLED, DISABLED2
-	};
+  /**
+   * All possible states of UserStatus
+   */
+  private static UserStatus[] allValues = {
+      CREATED, CONFIRMED, DISABLED, DISABLED2
+  };
+  /**
+   *
+   */
+  private static String[] valueNames = {
+      "created", "confirmed", "disabled", "disabled"
+  };
+  /**
+   *
+   */
+  private int value = 0;
 
-	/**
-	 * @methodtype conversion
-	 */
-	public static UserStatus getFromInt(int myValue) throws IllegalArgumentException {
-		assertIsValidUserStatusAsInt(myValue);
-		return allValues[myValue];
-	}
+  /**
+   *
+   */
+  UserStatus(int newValue) {
+    value = newValue;
+  }
 
-	/**
-	 * @methodtype conversion
-	 */
-	protected static void assertIsValidUserStatusAsInt(int myValue) throws IllegalArgumentException {
-		if ((myValue < 0) || (myValue > 3)) {
-			throw new IllegalArgumentException("invalid UserStatus int: " + myValue);
-		}
-	}
+  /**
+   * @methodtype conversion
+   */
+  public static UserStatus getFromInt(int myValue) throws IllegalArgumentException {
+    assertIsValidUserStatusAsInt(myValue);
+    return allValues[myValue];
+  }
 
-	/**
-	 *
-	 */
-	private static String[] valueNames = {
-			"created", "confirmed", "disabled", "disabled"
-	};
+  /**
+   * @methodtype conversion
+   */
+  protected static void assertIsValidUserStatusAsInt(int myValue) throws IllegalArgumentException {
+    if ((myValue < 0) || (myValue > 3)) {
+      throw new IllegalArgumentException("invalid UserStatus int: " + myValue);
+    }
+  }
 
-	/**
-	 *
-	 */
-	public static UserStatus getFromString(String aStatus) throws IllegalArgumentException {
-		for (UserStatus status : UserStatus.values()) {
-			if (valueNames[status.asInt()].equals(aStatus)) {
-				return status;
-			}
-		}
+  /**
+   *
+   */
+  public static UserStatus getFromString(String aStatus) throws IllegalArgumentException {
+    for (UserStatus status : UserStatus.values()) {
+      if (valueNames[status.asInt()].equals(aStatus)) {
+        return status;
+      }
+    }
 
-		throw new IllegalArgumentException("invalid UserStatus string: " + aStatus);
-	}
+    throw new IllegalArgumentException("invalid UserStatus string: " + aStatus);
+  }
 
-	/**
-	 *
-	 */
-	private int value = 0;
+  /**
+   *
+   */
+  public int asInt() {
+    return value;
+  }
 
-	/**
-	 *
-	 */
-	UserStatus(int newValue) {
-		value = newValue;
-	}
+  /**
+   *
+   */
+  public String asString() {
+    return valueNames[value];
+  }
 
-	/**
-	 *
-	 */
-	public int asInt() {
-		return value;
-	}
+  /**
+   *
+   */
+  public UserStatus[] getAllValues() {
+    return allValues;
+  }
 
-	/**
-	 *
-	 */
-	public String asString() {
-		return valueNames[value];
-	}
+  /**
+   *
+   */
+  public String getTypeName() {
+    return "UserStatus";
+  }
 
-	/**
-	 *
-	 */
-	public UserStatus[] getAllValues() {
-		return allValues;
-	}
+  /**
+   *
+   */
+  public boolean isCreated() {
+    return true;
+  }
 
-	/**
-	 *
-	 */
-	public String getTypeName() {
-		return "UserStatus";
-	}
+  /**
+   *
+   */
+  public boolean isConfirmed() {
+    return (value & (1 << CONFIRMED_BIT)) != 0;
+  }
 
-	/**
-	 *
-	 */
-	public boolean isCreated() {
-		return true;
-	}
+  /**
+   *
+   */
+  public UserStatus asConfirmed() {
+    return getFromInt(value | (1 << CONFIRMED_BIT));
+  }
 
-	/**
-	 *
-	 */
-	public boolean isConfirmed() {
-		return (value & (1 << CONFIRMED_BIT)) != 0;
-	}
+  /**
+   *
+   */
+  public boolean isDisabled() {
+    return (value & (1 << DISABLED_BIT)) != 0;
+  }
 
-	/**
-	 *
-	 */
-	public UserStatus asConfirmed() {
-		return getFromInt(value | (1 << CONFIRMED_BIT));
-	}
+  /**
+   *
+   */
+  public UserStatus asDisabled() {
+    return getFromInt(value | (1 << DISABLED_BIT));
+  }
 
-	/**
-	 *
-	 */
-	public boolean isDisabled() {
-		return (value & (1 << DISABLED_BIT)) != 0;
-	}
-
-	/**
-	 *
-	 */
-	public UserStatus asDisabled() {
-		return getFromInt(value | (1 << DISABLED_BIT));
-	}
-
-	/**
-	 *
-	 */
-	public UserStatus asEnabled() {
-		return getFromInt(value & (1 << CONFIRMED_BIT));
-	}
+  /**
+   *
+   */
+  public UserStatus asEnabled() {
+    return getFromInt(value & (1 << CONFIRMED_BIT));
+  }
 
 }

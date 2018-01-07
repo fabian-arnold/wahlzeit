@@ -25,30 +25,30 @@ package org.wahlzeit.services;
  */
 public class SessionManager {
 
-	/**
-	 *
-	 */
-	protected static ThreadLocal<Session> sessions = new ThreadLocal<Session>();
+  /**
+   *
+   */
+  protected static ThreadLocal<Session> sessions = new ThreadLocal<Session>();
 
-	/**
-	 *
-	 */
-	public static Session getThreadLocalSession() {
-		return sessions.get();
-	}
+  /**
+   *
+   */
+  public static Session getThreadLocalSession() {
+    return sessions.get();
+  }
 
-	/**
-	 *
-	 */
-	public static void setThreadLocalSession(Session ctx) {
-		sessions.set(ctx);
-	}
+  /**
+   *
+   */
+  public static void setThreadLocalSession(Session ctx) {
+    sessions.set(ctx);
+  }
 
-	/**
-	 *
-	 */
-	public static void dropThreadLocalSession() {
-		setThreadLocalSession(null);
-	}
+  /**
+   *
+   */
+  public static void dropThreadLocalSession() {
+    setThreadLocalSession(null);
+  }
 
 }

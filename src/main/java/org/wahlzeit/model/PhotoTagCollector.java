@@ -20,30 +20,29 @@
 
 package org.wahlzeit.model;
 
-import org.wahlzeit.utils.StringUtil;
-
 import java.util.Set;
+import org.wahlzeit.utils.StringUtil;
 
 /**
  * A PhotoTagCollector provides a method to collect all tags for a given photo.
  */
 public class PhotoTagCollector {
 
-	/**
-	 *
-	 */
-	public void collect(Set<String> tags, Photo photo) {
-		String ownerName = photo.getOwnerId();
-		if (!StringUtil.isNullOrEmptyString(ownerName)) {
-			String ownerNameAsTag = Tags.asTag(ownerName);
-			tags.add("un:" + ownerNameAsTag);
-			tags.add("tg:" + ownerNameAsTag);
-		}
+  /**
+   *
+   */
+  public void collect(Set<String> tags, Photo photo) {
+    String ownerName = photo.getOwnerId();
+    if (!StringUtil.isNullOrEmptyString(ownerName)) {
+      String ownerNameAsTag = Tags.asTag(ownerName);
+      tags.add("un:" + ownerNameAsTag);
+      tags.add("tg:" + ownerNameAsTag);
+    }
 
-		String[] photoTags = photo.getTags().asArray();
-		for (int i = 0; i < photoTags.length; i++) {
-			tags.add("tg:" + photoTags[i]);
-		}
-	}
+    String[] photoTags = photo.getTags().asArray();
+    for (int i = 0; i < photoTags.length; i++) {
+      tags.add("tg:" + photoTags[i]);
+    }
+  }
 
 }

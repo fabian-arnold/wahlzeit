@@ -20,11 +20,10 @@
 
 package org.wahlzeit.handlers;
 
-import org.wahlzeit.services.LogBuilder;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.wahlzeit.services.LogBuilder;
 
 
 /**
@@ -32,92 +31,92 @@ import java.util.logging.Logger;
  */
 public class WebPartHandlerManager {
 
-	/**
-	 *
-	 */
-	protected static final WebPartHandlerManager instance = new WebPartHandlerManager();
-	private static final Logger log = Logger.getLogger(WebPartHandler.class.getName());
-	/**
-	 *
-	 */
-	protected Map<String, WebPartHandler> handler = new HashMap<String, WebPartHandler>();
+  /**
+   *
+   */
+  protected static final WebPartHandlerManager instance = new WebPartHandlerManager();
+  private static final Logger log = Logger.getLogger(WebPartHandler.class.getName());
+  /**
+   *
+   */
+  protected Map<String, WebPartHandler> handler = new HashMap<String, WebPartHandler>();
 
-	/**
-	 *
-	 */
-	protected WebPartHandlerManager() {
-		// do nothing
-	}
+  /**
+   *
+   */
+  protected WebPartHandlerManager() {
+    // do nothing
+  }
 
-	/**
-	 *
-	 */
-	public static WebPageHandler getWebPageHandler(String name) {
-		return instance.getWebPageHandlerFor(name);
-	}
+  /**
+   *
+   */
+  public static WebPageHandler getWebPageHandler(String name) {
+    return instance.getWebPageHandlerFor(name);
+  }
 
-	/**
-	 *
-	 */
-	public WebPageHandler getWebPageHandlerFor(String name) {
-		WebPartHandler result = handler.get(name);
-		if (result == null || !(result instanceof WebPageHandler)) {
-			result = getDefaultWebPageHandler();
-		}
+  /**
+   *
+   */
+  public static WebFormHandler getWebFormHandler(String name) {
+    return instance.getWebFormHandlerFor(name);
+  }
 
-		return (WebPageHandler) result;
-	}
+  /**
+   *
+   */
+  public static WebPartHandlerManager getInstance() {
+    return instance;
+  }
 
-	/**
-	 *
-	 */
-	public WebPartHandler getDefaultWebPageHandler() {
-		return handler.get("index");
-	}
+  /**
+   *
+   */
+  public WebPageHandler getWebPageHandlerFor(String name) {
+    WebPartHandler result = handler.get(name);
+    if (result == null || !(result instanceof WebPageHandler)) {
+      result = getDefaultWebPageHandler();
+    }
 
-	/**
-	 *
-	 */
-	public static WebFormHandler getWebFormHandler(String name) {
-		return instance.getWebFormHandlerFor(name);
-	}
+    return (WebPageHandler) result;
+  }
 
-	/**
-	 *
-	 */
-	public WebFormHandler getWebFormHandlerFor(String name) {
-		WebPartHandler result = handler.get(name);
-		if (result == null || !(result instanceof WebFormHandler)) {
-			result = getDefaultWebPageHandler();
-		}
+  /**
+   *
+   */
+  public WebPartHandler getDefaultWebPageHandler() {
+    return handler.get("index");
+  }
 
-		return (WebFormHandler) result;
-	}
+  /**
+   *
+   */
+  public WebFormHandler getWebFormHandlerFor(String name) {
+    WebPartHandler result = handler.get(name);
+    if (result == null || !(result instanceof WebFormHandler)) {
+      result = getDefaultWebPageHandler();
+    }
 
-	/**
-	 *
-	 */
-	public static WebPartHandlerManager getInstance() {
-		return instance;
-	}
+    return (WebFormHandler) result;
+  }
 
-	/**
-	 *
-	 */
-	public WebPartHandler addWebPartHandler(String name, WebPartHandler myHandler) {
-		handler.put(name, myHandler);
-		log.config(LogBuilder.createSystemMessage().
-				addAction("add WebPartHandler").
-				addParameter("name", name).
-				addParameter("handler", myHandler).toString());
-		return myHandler;
-	}
+  /**
+   *
+   */
+  public WebPartHandler addWebPartHandler(String name, WebPartHandler myHandler) {
+    handler.put(name, myHandler);
+    log.config(LogBuilder.createSystemMessage().
+        addAction("add WebPartHandler").
+        addParameter("name", name).
+        addParameter("handler", myHandler).toString());
+    return myHandler;
+  }
 
-	/**
-	 *
-	 */
-	public WebPartHandler getDefaultWebFormHandler() {
-		return handler.get("null");
-	}
+  /**
+   *
+   */
+  public WebPartHandler getDefaultWebFormHandler() {
+    return handler.get("null");
+  }
 
 }

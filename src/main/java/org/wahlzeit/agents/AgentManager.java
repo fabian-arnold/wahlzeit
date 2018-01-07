@@ -20,83 +20,81 @@
 
 package org.wahlzeit.agents;
 
-import org.wahlzeit.services.LogBuilder;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.wahlzeit.services.LogBuilder;
 
 /**
  * The AgentManager singleton manages all Agent instances.
  */
 public class AgentManager {
 
-	private static Logger log = Logger.getLogger(AgentManager.class.getName());
+  /**
+   *
+   */
+  protected static AgentManager instance = null;
+  private static Logger log = Logger.getLogger(AgentManager.class.getName());
+  /**
+   *
+   */
+  protected Map<String, Agent> agents = new HashMap<String, Agent>();
 
-	/**
-	 *
-	 */
-	protected static AgentManager instance = null;
+  /**
+   *
+   */
+  protected AgentManager() {
+    // do nothing
+  }
 
-	/**
-	 * @methodtype initialization
-	 */
-	protected static void initInstance() {
-		getInstance().addAgent(new NotifyUsersAboutPraiseAgent());
-	}
+  /**
+   * @methodtype initialization
+   */
+  protected static void initInstance() {
+    getInstance().addAgent(new NotifyUsersAboutPraiseAgent());
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public static synchronized AgentManager getInstance() {
-		if (instance == null) {
-			instance = new AgentManager();
-			initInstance();
-		}
-		return instance;
-	}
+  /**
+   * @methodtype get
+   */
+  public static synchronized AgentManager getInstance() {
+    if (instance == null) {
+      instance = new AgentManager();
+      initInstance();
+    }
+    return instance;
+  }
 
-	/**
-	 *
-	 */
-	protected Map<String, Agent> agents = new HashMap<String, Agent>();
+  /**
+   * @methodtype get
+   */
+  public Agent getAgent(String name) {
+    return agents.get(name);
+  }
 
-	/**
-	 *
-	 */
-	protected AgentManager() {
-		// do nothing
-	}
+  /**
+   * @methodtype set
+   */
+  public void addAgent(Agent agent) {
+    String name;
+    synchronized (agent) {
+      name = agent.getName();
+      agents.put(name, agent);
+    }
+    log.config(LogBuilder.createSystemMessage().addMessage("agent added").addParameter("name", name)
+        .toString());
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public Agent getAgent(String name) {
-		return agents.get(name);
-	}
-
-	/**
-	 * @methodtype set
-	 */
-	public void addAgent(Agent agent) {
-		String name;
-		synchronized (agent) {
-			name = agent.getName();
-			agents.put(name, agent);
-		}
-		log.config(LogBuilder.createSystemMessage().addMessage("agent added").addParameter("name", name).toString());
-	}
-
-	/**
-	 * @methodtype command
-	 */
-	public void startAgent(String agentName) throws IllegalArgumentException {
-		Agent agent = getAgent(agentName);
-		if (agent != null) {
-			agent.run();
-		} else {
-			throw new IllegalArgumentException("Unknown agent name: " + agentName);
-		}
-	}
+  /**
+   * @methodtype command
+   */
+  public void startAgent(String agentName) throws IllegalArgumentException {
+    Agent agent = getAgent(agentName);
+    if (agent != null) {
+      agent.run();
+    } else {
+      throw new IllegalArgumentException("Unknown agent name: " + agentName);
+    }
+  }
 
 }

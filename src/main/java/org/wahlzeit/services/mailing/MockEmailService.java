@@ -20,28 +20,28 @@
 
 package org.wahlzeit.services.mailing;
 
-import org.wahlzeit.services.EmailAddress;
-
 import javax.mail.Message;
+import org.wahlzeit.services.EmailAddress;
 
 /**
  * Abstract superclass for non-trivial EmailServer implementations.
  */
 public class MockEmailService extends AbstractEmailService {
 
-	/**
-	 *
-	 */
-	protected Message doCreateEmail(EmailAddress from, EmailAddress to, EmailAddress bcc, String subject,
-									String body) throws MailingException {
-		return null;
-	}
+  /**
+   *
+   */
+  protected Message doCreateEmail(EmailAddress from, EmailAddress to, EmailAddress bcc,
+      String subject,
+      String body) throws MailingException {
+    return null;
+  }
 
-	/**
-	 *
-	 */
-	protected void doSendEmail(Message msg) throws MailingException {
-		// do nothing
-	}
+  /**
+   *
+   */
+  protected void doSendEmail(Message msg) throws MailingException {
+    // do nothing
+  }
 
 }

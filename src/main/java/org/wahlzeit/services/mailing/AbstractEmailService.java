@@ -20,97 +20,102 @@
 
 package org.wahlzeit.services.mailing;
 
+import java.util.logging.Logger;
+import javax.mail.Message;
 import org.wahlzeit.services.EmailAddress;
 import org.wahlzeit.services.LogBuilder;
 import org.wahlzeit.utils.StringUtil;
-
-import javax.mail.Message;
-import java.util.logging.Logger;
 
 /**
  * Abstract superclass for non-trivial EmailServer implementations.
  */
 public abstract class AbstractEmailService implements EmailService {
 
-    private static final Logger log = Logger.getLogger(AbstractEmailService.class.getName());
+  private static final Logger log = Logger.getLogger(AbstractEmailService.class.getName());
 
-    /**
-     *
-     */
-    @Override
-    public void sendEmail(EmailAddress from, EmailAddress to, String subject, String body) throws MailingException {
-        sendEmail(from, to, EmailAddress.EMPTY, subject, body);
+  /**
+   *
+   */
+  @Override
+  public void sendEmail(EmailAddress from, EmailAddress to, String subject, String body)
+      throws MailingException {
+    sendEmail(from, to, EmailAddress.EMPTY, subject, body);
+  }
+
+  /**
+   *
+   */
+  @Override
+  public boolean sendEmailIgnoreException(EmailAddress from, EmailAddress to, String subject,
+      String body) {
+    return sendEmailIgnoreException(from, to, EmailAddress.EMPTY, subject, body);
+  }
+
+  /**
+   *
+   */
+  @Override
+  public void sendEmail(EmailAddress from, EmailAddress to, EmailAddress bcc, String subject,
+      String body) throws
+      MailingException {
+    assertIsValidEmailAddress(from, "from");
+    assertIsValidEmailAddress(to, "to");
+    if (bcc != null && bcc != EmailAddress.EMPTY) {
+      assertIsValidEmailAddress(bcc, "bcc");
     }
+    assertIsValidString(subject, "subject");
+    assertIsValidString(body, "body");
 
-    /**
-     *
-     */
-    @Override
-    public boolean sendEmailIgnoreException(EmailAddress from, EmailAddress to, String subject, String body) {
-        return sendEmailIgnoreException(from, to, EmailAddress.EMPTY, subject, body);
+    Message msg = doCreateEmail(from, to, bcc, subject, body);
+    doSendEmail(msg);
+  }
+
+  /**
+   *
+   */
+  @Override
+  public boolean sendEmailIgnoreException(EmailAddress from, EmailAddress to, EmailAddress bcc,
+      String subject,
+      String body) {
+    try {
+      sendEmail(from, to, bcc, subject, body);
+      return true;
+    } catch (Exception ex) {
+      log.warning(LogBuilder.createSystemMessage().
+          addException("Problem sending email", ex).toString());
+      return false;
     }
+  }
 
-    /**
-     *
-     */
-    @Override
-    public void sendEmail(EmailAddress from, EmailAddress to, EmailAddress bcc, String subject, String body) throws
-            MailingException {
-        assertIsValidEmailAddress(from, "from");
-        assertIsValidEmailAddress(to, "to");
-        if (bcc != null && bcc != EmailAddress.EMPTY) {
-            assertIsValidEmailAddress(bcc, "bcc");
-        }
-        assertIsValidString(subject, "subject");
-        assertIsValidString(body, "body");
-
-        Message msg = doCreateEmail(from, to, bcc, subject, body);
-        doSendEmail(msg);
+  /**
+   *
+   */
+  protected void assertIsValidEmailAddress(EmailAddress address, String label)
+      throws MailingException {
+    if ((address == null) || !address.isValid()) {
+      throw new MailingException(label + " must be a valid email address");
     }
+  }
 
-    /**
-     *
-     */
-    @Override
-    public boolean sendEmailIgnoreException(EmailAddress from, EmailAddress to, EmailAddress bcc, String subject,
-                                            String body) {
-        try {
-            sendEmail(from, to, bcc, subject, body);
-            return true;
-        } catch (Exception ex) {
-            log.warning(LogBuilder.createSystemMessage().
-                    addException("Problem sending email", ex).toString());
-            return false;
-        }
+  /**
+   *
+   */
+  protected void assertIsValidString(String toBeChecked, String label) throws MailingException {
+    if (StringUtil.isNullOrEmptyString(toBeChecked)) {
+      throw new MailingException(label + " must neither be null nor empty");
     }
+  }
 
-    /**
-     *
-     */
-    protected void assertIsValidEmailAddress(EmailAddress address, String label) throws MailingException {
-        if ((address == null) || !address.isValid()) {
-            throw new MailingException(label + " must be a valid email address");
-        }
-    }
+  /**
+   *
+   */
+  protected abstract Message doCreateEmail(EmailAddress from, EmailAddress to, EmailAddress bcc,
+      String subject,
+      String body) throws MailingException;
 
-    /**
-     *
-     */
-    protected void assertIsValidString(String toBeChecked, String label) throws MailingException {
-        if (StringUtil.isNullOrEmptyString(toBeChecked)) {
-            throw new MailingException(label + " must neither be null nor empty");
-        }
-    }
-
-    /**
-     *
-     */
-    protected abstract Message doCreateEmail(EmailAddress from, EmailAddress to, EmailAddress bcc, String subject,
-                                             String body) throws MailingException;
-
-    /**
-     *
-     */
-    protected abstract void doSendEmail(Message msg) throws MailingException;
+  /**
+   *
+   */
+  protected abstract void doSendEmail(Message msg) throws MailingException;
 
 }

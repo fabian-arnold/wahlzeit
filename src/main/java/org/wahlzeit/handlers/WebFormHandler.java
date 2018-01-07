@@ -20,18 +20,17 @@
 
 package org.wahlzeit.handlers;
 
-import org.wahlzeit.model.UserSession;
-
 import java.util.Map;
+import org.wahlzeit.model.UserSession;
 
 /**
  * The general interface for web forms
  */
 public interface WebFormHandler extends WebPartHandler {
 
-	/**
-	 * @return suggest name of page to render
-	 */
-	String handlePost(UserSession us, Map args);
+  /**
+   * @return suggest name of page to render
+   */
+  String handlePost(UserSession us, Map args);
 
 }

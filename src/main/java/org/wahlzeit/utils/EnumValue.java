@@ -25,24 +25,24 @@ package org.wahlzeit.utils;
  */
 public interface EnumValue {
 
-	/**
-	 * @methodtype conversion
-	 */
-	int asInt();
+  /**
+   * @methodtype conversion
+   */
+  int asInt();
 
-	/**
-	 * @methodtype conversion
-	 */
-	String asString();
+  /**
+   * @methodtype conversion
+   */
+  String asString();
 
-	/**
-	 * @methodtype get
-	 */
-	EnumValue[] getAllValues();
+  /**
+   * @methodtype get
+   */
+  EnumValue[] getAllValues();
 
-	/**
-	 * @methodtype get
-	 */
-	String getTypeName();
+  /**
+   * @methodtype get
+   */
+  String getTypeName();
 
 }

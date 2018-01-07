@@ -27,140 +27,137 @@ import org.wahlzeit.utils.EnumValue;
  */
 public enum FlagReason implements EnumValue {
 
-	/**
-	 *
-	 */
-	MISMATCH(0), OFFENSIVE(1), COPYRIGHT(2), OTHER(3);
+  /**
+   *
+   */
+  MISMATCH(0), OFFENSIVE(1), COPYRIGHT(2), OTHER(3);
 
-	protected static final int MAX_VALUE = 3;
+  protected static final int MAX_VALUE = 3;
+  /**
+   *
+   */
+  private static final String[] valueNames = {
+      "mismatch", "offensive", "copyright", "other"
+  };
+  /**
+   *
+   */
+  private static FlagReason[] allValues = {
+      MISMATCH, OFFENSIVE, COPYRIGHT, OTHER
+  };
+  /**
+   * Used to index arrays
+   */
+  private int value;
 
-	/**
-	 *
-	 */
-	private static FlagReason[] allValues = {
-			MISMATCH, OFFENSIVE, COPYRIGHT, OTHER
-	};
+  /**
+   *
+   */
+  FlagReason(int myValue) {
+    assertIsValidFlagReasonAsInt(myValue);
 
-	/**
-	 *
-	 */
-	public static FlagReason getFromInt(int myValue) throws IllegalArgumentException {
-		assertIsValidFlagReasonAsInt(myValue);
+    value = myValue;
 
-		return allValues[myValue];
-	}
+    assertIsValidFlagReasonAsInt(value);
+  }
 
-	/**
-	 *
-	 */
-	private static final String[] valueNames = {
-			"mismatch", "offensive", "copyright", "other"
-	};
+  /**
+   *
+   */
+  public static FlagReason getFromInt(int myValue) throws IllegalArgumentException {
+    assertIsValidFlagReasonAsInt(myValue);
 
-	/**
-	 *
-	 */
-	public static FlagReason getFromString(String reason) throws IllegalArgumentException {
-		int value = findFlagReasonIntFromString(reason);
-		return getFromInt(value);
-	}
+    return allValues[myValue];
+  }
 
-	/**
-	 * Used to index arrays
-	 */
-	private int value;
+  /**
+   *
+   */
+  public static FlagReason getFromString(String reason) throws IllegalArgumentException {
+    int value = findFlagReasonIntFromString(reason);
+    return getFromInt(value);
+  }
 
-	/**
-	 *
-	 */
-	FlagReason(int myValue) {
-		assertIsValidFlagReasonAsInt(myValue);
+  /**
+   *
+   */
+  private static void assertIsValidFlagReasonAsInt(int myValue) {
+    if ((myValue < 0) || (myValue > MAX_VALUE)) {
+      throw new IllegalArgumentException("invalid FlagReason int: " + myValue);
+    }
+  }
 
-		value = myValue;
+  /**
+   *
+   */
+  private static void assertIsValidFlagReasonAsString(String reason) {
+    if (findFlagReasonIntFromString(reason) == -1) {
+      throw new IllegalArgumentException("'" + reason + "' is not a valid reason!");
+    }
+  }
 
-		assertIsValidFlagReasonAsInt(value);
-	}
+  /**
+   *
+   */
+  private static int findFlagReasonIntFromString(String reason) {
+    int value = 0;
 
-	/**
-	 * @methodtype conversion
-	 */
-	public int asInt() {
-		assertIsValidFlagReasonAsInt(value);
+    for (String name : valueNames) {
+      if (name.equals(reason)) {
+        break;
+      } else {
+        value++;
+      }
+    }
 
-		return value;
-	}
+    if (value > MAX_VALUE) {
+      value = -1;
+    }
 
-	/**
-	 * @methodtype conversion
-	 */
-	public String asString() {
-		String name = valueNames[value];
+    return value;
+  }
 
-		assertIsValidFlagReasonAsString(name);
+  /**
+   *
+   */
+  private static void assertIsValidFlagReason(FlagReason reason) {
+    if (reason == null) {
+      throw new IllegalArgumentException("invalid reason");
+    }
+  }
 
-		return name;
-	}
+  /**
+   * @methodtype conversion
+   */
+  public int asInt() {
+    assertIsValidFlagReasonAsInt(value);
 
-	/**
-	 * @methodtype get
-	 */
-	public FlagReason[] getAllValues() {
-		return allValues;
-	}
+    return value;
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public String getTypeName() {
-		return "FlagReason";
-	}
+  /**
+   * @methodtype conversion
+   */
+  public String asString() {
+    String name = valueNames[value];
 
-	/**
-	 *
-	 */
-	private static void assertIsValidFlagReasonAsInt(int myValue) {
-		if ((myValue < 0) || (myValue > MAX_VALUE)) {
-			throw new IllegalArgumentException("invalid FlagReason int: " + myValue);
-		}
-	}
+    assertIsValidFlagReasonAsString(name);
 
-	/**
-	 *
-	 */
-	private static void assertIsValidFlagReasonAsString(String reason) {
-		if (findFlagReasonIntFromString(reason) == -1) {
-			throw new IllegalArgumentException("'" + reason + "' is not a valid reason!");
-		}
-	}
+    return name;
+  }
 
-	/**
-	 *
-	 */
-	private static int findFlagReasonIntFromString(String reason) {
-		int value = 0;
+  /**
+   * @methodtype get
+   */
+  public FlagReason[] getAllValues() {
+    return allValues;
+  }
 
-		for (String name : valueNames) {
-			if (name.equals(reason)) {
-				break;
-			} else {
-				value++;
-			}
-		}
-
-		if (value > MAX_VALUE) {
-			value = -1;
-		}
-
-		return value;
-	}
-
-	/**
-	 *
-	 */
-	private static void assertIsValidFlagReason(FlagReason reason) {
-		if (reason == null) {
-			throw new IllegalArgumentException("invalid reason");
-		}
-	}
+  /**
+   * @methodtype get
+   */
+  public String getTypeName() {
+    return "FlagReason";
+  }
 
 }

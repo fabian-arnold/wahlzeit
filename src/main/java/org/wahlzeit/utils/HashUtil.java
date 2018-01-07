@@ -1,6 +1,7 @@
 package org.wahlzeit.utils;
 
 public class HashUtil {
+
   /**
    * Calculates a hash for 3 double values
    *

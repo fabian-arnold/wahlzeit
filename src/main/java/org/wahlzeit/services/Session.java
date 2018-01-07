@@ -27,90 +27,90 @@ package org.wahlzeit.services;
  */
 public class Session {
 
-	public static final String NAME = "name";
-	public static final String PROCESSING_TIME = "processingTime";
-	public static final String NO_SESSION = "no session";
+  public static final String NAME = "name";
+  public static final String PROCESSING_TIME = "processingTime";
+  public static final String NO_SESSION = "no session";
 
-	/**
-	 * Session state
-	 */
-	protected String name = null;
+  /**
+   * Session state
+   */
+  protected String name = null;
 
 
-	/**
-	 * processing time for requests
-	 */
-	protected long processingTime = 0;
+  /**
+   * processing time for requests
+   */
+  protected long processingTime = 0;
 
-	/**
-	 *
-	 */
-	protected Session() {
-		// do nothing
-	}
+  /**
+   *
+   */
+  protected Session() {
+    // do nothing
+  }
 
-	/**
-	 * @methodtype init
-	 */
-	protected void initialize(String myName) {
-		name = myName;
-		notifyNameChanged();
-	}
+  /**
+   * @methodtype init
+   */
+  protected void initialize(String myName) {
+    name = myName;
+    notifyNameChanged();
+  }
 
-	/**
-	 * @methodproperty hook
-	 *
-	 * Hook method for subclasses to get to know when name changes.
-	 * @see #initialize(String)
-	 */
-	protected void notifyNameChanged() {
-	}
+  /**
+   * @methodproperty hook
+   *
+   * Hook method for subclasses to get to know when name changes.
+   * @see #initialize(String)
+   */
+  protected void notifyNameChanged() {
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public String getName() {
-		return name;
-	}
+  /**
+   * @methodtype get
+   */
+  public String getName() {
+    return name;
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public String getClientId() {
-		return "system";
-	}
+  /**
+   * @methodtype get
+   */
+  public String getClientId() {
+    return "system";
+  }
 
-	/**
-	 * @methodtype init
-	 */
-	public void resetProcessingTime() {
-		processingTime = 0;
-		notifyProcessingTimeChanged();
-	}
+  /**
+   * @methodtype init
+   */
+  public void resetProcessingTime() {
+    processingTime = 0;
+    notifyProcessingTimeChanged();
+  }
 
-	/**
-	 * @methodproperty hook
-	 *
-	 * Hook method for subclasses to get to know when processing time changes.
-	 * @see #addProcessingTime(long)
-	 * @see #resetProcessingTime()
-	 */
-	protected void notifyProcessingTimeChanged() {
-	}
+  /**
+   * @methodproperty hook
+   *
+   * Hook method for subclasses to get to know when processing time changes.
+   * @see #addProcessingTime(long)
+   * @see #resetProcessingTime()
+   */
+  protected void notifyProcessingTimeChanged() {
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void addProcessingTime(long time) {
-		processingTime += time;
-		notifyProcessingTimeChanged();
-	}
+  /**
+   * @methodtype set
+   */
+  public void addProcessingTime(long time) {
+    processingTime += time;
+    notifyProcessingTimeChanged();
+  }
 
-	/**
-	 * @methodtype get
-	 */
-	public long getProcessingTime() {
-		return processingTime;
-	}
+  /**
+   * @methodtype get
+   */
+  public long getProcessingTime() {
+    return processingTime;
+  }
 
 }

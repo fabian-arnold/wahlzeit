@@ -28,42 +28,42 @@ import java.io.Serializable;
  */
 public abstract class DataObject implements Persistent, Serializable {
 
-	/**
-	 * Not used in the class but needed by broad array of subclasses
-	 */
-	public static final String ID = "id";
+  /**
+   * Not used in the class but needed by broad array of subclasses
+   */
+  public static final String ID = "id";
 
-	/**
-	 *
-	 */
-	protected transient int writeCount = 0;
+  /**
+   *
+   */
+  protected transient int writeCount = 0;
 
-	/**
-	 *
-	 */
-	public final boolean isDirty() {
-		return writeCount != 0;
-	}
+  /**
+   *
+   */
+  public final boolean isDirty() {
+    return writeCount != 0;
+  }
 
-	/**
-	 *
-	 */
-	public final void resetWriteCount() {
-		writeCount = 0;
-	}
+  /**
+   *
+   */
+  public final void resetWriteCount() {
+    writeCount = 0;
+  }
 
-	/**
-	 *
-	 */
-	public final void incWriteCount() {
-		writeCount++;
-	}
+  /**
+   *
+   */
+  public final void incWriteCount() {
+    writeCount++;
+  }
 
-	/**
-	 *
-	 */
-	public final void touch() {
-		incWriteCount();
-	}
+  /**
+   *
+   */
+  public final void touch() {
+    incWriteCount();
+  }
 
 }

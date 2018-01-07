@@ -28,121 +28,119 @@ import org.wahlzeit.utils.EnumValue;
  */
 public enum Gender implements EnumValue {
 
-	/**
-	 * UNDEFINED = user never entered anything
-	 */
-	UNDEFINED(0), MALE(1), FEMALE(2), OTHER(3);
+  /**
+   * UNDEFINED = user never entered anything
+   */
+  UNDEFINED(0), MALE(1), FEMALE(2), OTHER(3);
 
-	/**
-	 *
-	 */
-	private static Gender[] allValues = {
-			UNDEFINED, MALE, FEMALE, OTHER
-	};
+  /**
+   *
+   */
+  private static final String[] valueNames = {
+      "undefined", "male", "female", "other"
+  };
+  /**
+   *
+   */
+  private static Gender[] allValues = {
+      UNDEFINED, MALE, FEMALE, OTHER
+  };
+  /**
+   *
+   */
+  private int value;
 
-	/**
-	 * @methodtype conversion
-	 */
-	public static Gender getFromInt(int myValue) throws IllegalArgumentException {
-		assertIsValidGenderAsInt(myValue);
-		return allValues[myValue];
-	}
+  /**
+   *
+   */
+  Gender(int myValue) {
+    value = myValue;
+  }
 
-	/**
-	 *
-	 */
-	protected static void assertIsValidGenderAsInt(int myValue) throws IllegalArgumentException {
-		if ((myValue < 0) || (myValue > 3)) {
-			throw new IllegalArgumentException("invalid Gender int: " + myValue);
-		}
-	}
+  /**
+   * @methodtype conversion
+   */
+  public static Gender getFromInt(int myValue) throws IllegalArgumentException {
+    assertIsValidGenderAsInt(myValue);
+    return allValues[myValue];
+  }
 
-	/**
-	 *
-	 */
-	private static final String[] valueNames = {
-			"undefined", "male", "female", "other"
-	};
+  /**
+   *
+   */
+  protected static void assertIsValidGenderAsInt(int myValue) throws IllegalArgumentException {
+    if ((myValue < 0) || (myValue > 3)) {
+      throw new IllegalArgumentException("invalid Gender int: " + myValue);
+    }
+  }
 
-	/**
-	 * @methodtype conversion
-	 */
-	public static Gender getFromString(String myGender) throws IllegalArgumentException {
-		for (Gender gender : Gender.values()) {
-			if (valueNames[gender.asInt()].equals(myGender)) {
-				return gender;
-			}
-		}
+  /**
+   * @methodtype conversion
+   */
+  public static Gender getFromString(String myGender) throws IllegalArgumentException {
+    for (Gender gender : Gender.values()) {
+      if (valueNames[gender.asInt()].equals(myGender)) {
+        return gender;
+      }
+    }
 
-		throw new IllegalArgumentException("invalid Gender string: " + myGender);
-	}
+    throw new IllegalArgumentException("invalid Gender string: " + myGender);
+  }
 
-	/**
-	 *
-	 */
-	private int value;
+  /**
+   *
+   */
+  public int asInt() {
+    return value;
+  }
 
-	/**
-	 *
-	 */
-	Gender(int myValue) {
-		value = myValue;
-	}
+  /**
+   *
+   */
+  public String asString() {
+    return valueNames[value];
+  }
 
-	/**
-	 *
-	 */
-	public int asInt() {
-		return value;
-	}
+  /**
+   *
+   */
+  public Gender[] getAllValues() {
+    return allValues;
+  }
 
-	/**
-	 *
-	 */
-	public String asString() {
-		return valueNames[value];
-	}
+  /**
+   *
+   */
+  public String getTypeName() {
+    return "Gender";
+  }
 
-	/**
-	 *
-	 */
-	public Gender[] getAllValues() {
-		return allValues;
-	}
+  /**
+   *
+   */
+  public boolean isUndefined() {
+    return (this == UNDEFINED);
+  }
 
-	/**
-	 *
-	 */
-	public String getTypeName() {
-		return "Gender";
-	}
+  /**
+   *
+   */
+  public boolean isMale() {
+    return (this == MALE);
+  }
 
-	/**
-	 *
-	 */
-	public boolean isUndefined() {
-		return (this == UNDEFINED);
-	}
+  /**
+   *
+   */
+  public boolean isFemale() {
+    return (this == FEMALE);
+  }
 
-	/**
-	 *
-	 */
-	public boolean isMale() {
-		return (this == MALE);
-	}
-
-	/**
-	 *
-	 */
-	public boolean isFemale() {
-		return (this == FEMALE);
-	}
-
-	/**
-	 *
-	 */
-	public boolean isOther() {
-		return (this == OTHER);
-	}
+  /**
+   *
+   */
+  public boolean isOther() {
+    return (this == OTHER);
+  }
 
 }

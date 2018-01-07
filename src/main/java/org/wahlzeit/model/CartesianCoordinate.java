@@ -29,10 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.wahlzeit.utils.ParameterUtil;
+import org.wahlzeit.utils.doc.DesignPattern;
+import org.wahlzeit.utils.doc.pattern.PatternType;
 
 /**
  * Class that provides a cartesian coordinates.
  */
+@DesignPattern(PatternType.FACTORY)
 public class CartesianCoordinate extends AbstractCoordinate {
 
   /**
@@ -117,7 +120,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
     int hash = hash3(x, y, z);
 
     synchronized (INSTANCES) {
-    List<WeakReference<CartesianCoordinate>> coords = INSTANCES.get(hash);
+      List<WeakReference<CartesianCoordinate>> coords = INSTANCES.get(hash);
 
       for (WeakReference<CartesianCoordinate> refCoord : coords) {
         // check if we are the entry in the list

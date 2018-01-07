@@ -22,10 +22,14 @@
 package org.wahlzeit.model;
 
 import org.wahlzeit.utils.ParameterUtil;
+import org.wahlzeit.utils.doc.DesignPattern;
+import org.wahlzeit.utils.doc.pattern.PatternType;
 
 /**
  * This class provides distance calculation between coordinates
  */
+@DesignPattern(value = PatternType.FILTER, intend = "Provide an easy interface for distance calculation",
+    participants = {CartesianCoordinate.class, SphericCoordinate.class})
 public class DistanceCalculator {
 
 
@@ -48,10 +52,10 @@ public class DistanceCalculator {
    */
   public static double cartesianDistance(CartesianCoordinate start, CartesianCoordinate end) {
 
-        /*
-         * This method calculates the euclidean distance between two points
-         * https://en.wikipedia.org/wiki/Euclidean_distance
-         */
+    /*
+     * This method calculates the euclidean distance between two points
+     * https://en.wikipedia.org/wiki/Euclidean_distance
+     */
 
     ParameterUtil.assertNotNull(start, "start");
     ParameterUtil.assertNotNull(end, "end");
@@ -67,7 +71,7 @@ public class DistanceCalculator {
     double distance = Math.sqrt(distanceX_2 + distanceY_2 + distanceZ_2);
 
     // check if we were able to calculate a valid distance
-    if(distance == Double.NaN){
+    if (distance == Double.NaN) {
       throw new IllegalStateException("There happened an error during distance calculation.");
     }
 
@@ -102,7 +106,7 @@ public class DistanceCalculator {
             2 * r1 * r2 * Math.sin(la1) * Math.sin(la2));
 
     // check if we were able to calculate a valid distance
-    if(distance == Double.NaN){
+    if (distance == Double.NaN) {
       throw new IllegalStateException("There happened an error during distance calculation.");
     }
 

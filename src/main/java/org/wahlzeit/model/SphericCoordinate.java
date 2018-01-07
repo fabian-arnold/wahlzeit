@@ -27,7 +27,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.wahlzeit.model.converter.CoordinateConverter;
 import org.wahlzeit.utils.ParameterUtil;
 
 /**
@@ -36,25 +35,21 @@ import org.wahlzeit.utils.ParameterUtil;
 public class SphericCoordinate extends AbstractCoordinate {
 
   /**
+   * This map stores all instances of cartesian coordinates
+   */
+  private static final HashMap<Integer, List<WeakReference<SphericCoordinate>>> INSTANCES = new HashMap<>();
+  /**
    * Stores the latitude of the coordinate
    */
   private final double latitude;
-
   /**
    * Stores the longitude of the coordinate
    */
   private final double longitude;
-
   /**
    * Stores the radius of the described point
    */
   private final double radius;
-
-
-  /**
-   * This map stores all instances of cartesian coordinates
-   */
-  private static final HashMap<Integer, List<WeakReference<SphericCoordinate>>> INSTANCES = new HashMap<>();
 
   /**
    * Creates a spheric coordinate with given location and radius
@@ -63,7 +58,21 @@ public class SphericCoordinate extends AbstractCoordinate {
    * @param longitude of the coordinate [-180, 180]
    * @param radius of the coordinate [0, inf)
    */
-  public synchronized static SphericCoordinate create(double latitude, double longitude, double radius) {
+  private SphericCoordinate(double latitude, double longitude, double radius) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.radius = radius;
+  }
+
+  /**
+   * Creates a spheric coordinate with given location and radius
+   *
+   * @param latitude of the coordinate [-90, 90]
+   * @param longitude of the coordinate [-180, 180]
+   * @param radius of the coordinate [0, inf)
+   */
+  public synchronized static SphericCoordinate create(double latitude, double longitude,
+      double radius) {
     // ensure a object get not persist twice
     synchronized (INSTANCES) {
       ParameterUtil.assertValidNumber(latitude, "latitude");
@@ -82,7 +91,8 @@ public class SphericCoordinate extends AbstractCoordinate {
             // the finalizer will clean it up probably
             continue;
           }
-          if (coord.getLatitude() == latitude && coord.getLongitude() == longitude && coord.getRadius() == radius) {
+          if (coord.getLatitude() == latitude && coord.getLongitude() == longitude
+              && coord.getRadius() == radius) {
             return coord;
           }
         }
@@ -130,20 +140,6 @@ public class SphericCoordinate extends AbstractCoordinate {
         }
       }
     }
-  }
-
-
-  /**
-   * Creates a spheric coordinate with given location and radius
-   *
-   * @param latitude of the coordinate [-90, 90]
-   * @param longitude of the coordinate [-180, 180]
-   * @param radius of the coordinate [0, inf)
-   */
-  private SphericCoordinate(double latitude, double longitude, double radius) {
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.radius = radius;
   }
 
   /**

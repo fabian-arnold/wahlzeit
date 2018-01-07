@@ -1,166 +1,161 @@
 package org.wahlzeit.model.persistence;
 
-import org.wahlzeit.model.PhotoSize;
-import org.wahlzeit.services.LogBuilder;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.logging.Logger;
+import org.wahlzeit.model.PhotoSize;
+import org.wahlzeit.services.LogBuilder;
 
 /**
  * Abstract super class that offers a convenient interface for all kinds of storage types to store images.
- * 
+ *
  * @review
  */
 public abstract class ImageStorage {
 
-	private static final Logger log = Logger.getLogger(ImageStorage.class.getName());
-	private static ImageStorage instance = null;
+  private static final Logger log = Logger.getLogger(ImageStorage.class.getName());
+  private static ImageStorage instance = null;
 
-	/**
-	 * @methodtype get
-	 */
-	public static ImageStorage getInstance()
-			throws NullPointerException {
+  /**
+   * @methodtype get
+   */
+  public static ImageStorage getInstance()
+      throws NullPointerException {
 
-		if (instance == null) {
-			throw new NullPointerException("Image storage instance is null, call setInstance() first!");
-		}
-		return instance;
-	}
+    if (instance == null) {
+      throw new NullPointerException("Image storage instance is null, call setInstance() first!");
+    }
+    return instance;
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public static void setInstance(ImageStorage newInstance) {
-		log.config(LogBuilder.createSystemMessage().
-				addAction("set ImageStorage instance").
-				addParameter("instance", newInstance).toString());
-		instance = newInstance;
-	}
+  /**
+   * @methodtype set
+   */
+  public static void setInstance(ImageStorage newInstance) {
+    log.config(LogBuilder.createSystemMessage().
+        addAction("set ImageStorage instance").
+        addParameter("instance", newInstance).toString());
+    instance = newInstance;
+  }
 
+  // write-methods ---------------------------------------------------------------------------------------------------
 
-	// write-methods ---------------------------------------------------------------------------------------------------
+  /**
+   * Writes the image to the storage, so you can access it via photoId and size again. An existing file with that
+   * parameter is overwritten.
+   *
+   * @methodtype command
+   * @methodproperty wrapper
+   */
+  public void writeImage(Serializable image, String photoIdAsString, int size)
+      throws InvalidParameterException, IOException {
 
-	/**
-	 * Writes the image to the storage, so you can access it via photoId and size again. An existing file with that
-	 * parameter is overwritten.
-	 *
-	 * @methodtype command
-	 * @methodproperty wrapper
-	 */
-	public void writeImage(Serializable image, String photoIdAsString, int size)
-			throws InvalidParameterException, IOException {
+    assertImageNotNull(image);
+    assertValidPhotoId(photoIdAsString);
+    PhotoSize.assertIsValidPhotoSizeAsInt(size);
 
-		assertImageNotNull(image);
-		assertValidPhotoId(photoIdAsString);
-		PhotoSize.assertIsValidPhotoSizeAsInt(size);
+    log.config(LogBuilder.createSystemMessage().
+        addAction("write image to storage").
+        addParameter("image", image).
+        addParameter("photo id", photoIdAsString).
+        addParameter("size", size).toString());
 
-		log.config(LogBuilder.createSystemMessage().
-				addAction("write image to storage").
-				addParameter("image", image).
-				addParameter("photo id", photoIdAsString).
-				addParameter("size", size).toString());
+    doWriteImage(image, photoIdAsString, size);
+  }
 
-		doWriteImage(image, photoIdAsString, size);
-	}
+  /**
+   * Actually writes the image to the storage
+   *
+   * @methodtype command
+   * @methodproperty hook
+   */
+  protected abstract void doWriteImage(Serializable image, String photoIdAsString, int size)
+      throws IOException, InvalidParameterException;
 
-	/**
-	 * Actually writes the image to the storage
-	 *
-	 * @methodtype command
-	 * @methodproperty hook
-	 */
-	protected abstract void doWriteImage(Serializable image, String photoIdAsString, int size)
-			throws IOException, InvalidParameterException;
+  // read methods ----------------------------------------------------------------------------------------------------
 
+  /**
+   * Reads an image from storage via photoId and the size. When the image is not found, null is returned.
+   *
+   * @methodtype get
+   * @methodproperty convenience
+   */
+  public Serializable readImage(String photoIdAsString, int size)
+      throws IllegalArgumentException, IOException {
 
-	// read methods ----------------------------------------------------------------------------------------------------
+    assertValidPhotoId(photoIdAsString);
+    PhotoSize.assertIsValidPhotoSizeAsInt(size);
 
-	/**
-	 * Reads an image from storage via photoId and the size. When the image is not found, null is returned.
-	 *
-	 * @methodtype get
-	 * @methodproperty convenience
-	 */
-	public Serializable readImage(String photoIdAsString, int size)
-			throws IllegalArgumentException, IOException {
+    log.config(LogBuilder.createSystemMessage().
+        addAction("read image from storage").
+        addParameter("photo id", photoIdAsString).
+        addParameter("size", size).toString());
 
-		assertValidPhotoId(photoIdAsString);
-		PhotoSize.assertIsValidPhotoSizeAsInt(size);
+    return doReadImage(photoIdAsString, size);
+  }
 
-		log.config(LogBuilder.createSystemMessage().
-				addAction("read image from storage").
-				addParameter("photo id", photoIdAsString).
-				addParameter("size", size).toString());
+  /**
+   * Actually reads the specified file from the storage. When not found, null is returned.
+   *
+   * @methodtype get
+   * @methodproperty hook
+   */
+  protected abstract Serializable doReadImage(String filename, int size)
+      throws IOException;
 
-		return doReadImage(photoIdAsString, size);
-	}
+  // exist method ----------------------------------------------------------------------------------------------------
 
-	/**
-	 * Actually reads the specified file from the storage. When not found, null is returned.
-	 *
-	 * @methodtype get
-	 * @methodproperty hook
-	 */
-	protected abstract Serializable doReadImage(String filename, int size)
-			throws IOException;
+  /**
+   * Checks if the specified image already exists in the storage
+   *
+   * @methodtype boolean query
+   * @methodproperty wrapper
+   */
+  public boolean doesImageExist(String photoIdAsString, int size)
+      throws IllegalArgumentException {
 
+    assertValidPhotoId(photoIdAsString);
+    PhotoSize.assertIsValidPhotoSizeAsInt(size);
 
-	// exist method ----------------------------------------------------------------------------------------------------
+    log.config(LogBuilder.createSystemMessage().
+        addAction("check if image exists in storage").
+        addParameter("photo id", photoIdAsString).
+        addParameter("size", size).toString());
 
-	/**
-	 * Checks if the specified image already exists in the storage
-	 *
-	 * @methodtype boolean query
-	 * @methodproperty wrapper
-	 */
-	public boolean doesImageExist(String photoIdAsString, int size)
-			throws IllegalArgumentException {
-
-		assertValidPhotoId(photoIdAsString);
-		PhotoSize.assertIsValidPhotoSizeAsInt(size);
-
-		log.config(LogBuilder.createSystemMessage().
-				addAction("check if image exists in storage").
-				addParameter("photo id", photoIdAsString).
-				addParameter("size", size).toString());
-
-		return doDoesImageExist(photoIdAsString, size);
-	}
+    return doDoesImageExist(photoIdAsString, size);
+  }
 
 
-	/**
-	 * Actually checks if the specified image already exists in the storage
-	 *
-	 * @methodtype boolean query
-	 * @methodproperty hook
-	 */
-	protected abstract boolean doDoesImageExist(String photoIdAsString, int size);
+  /**
+   * Actually checks if the specified image already exists in the storage
+   *
+   * @methodtype boolean query
+   * @methodproperty hook
+   */
+  protected abstract boolean doDoesImageExist(String photoIdAsString, int size);
 
+  // assertion methods -----------------------------------------------------------------------------------------------
 
-	// assertion methods -----------------------------------------------------------------------------------------------
+  /**
+   * @methodtype assert
+   */
+  protected void assertImageNotNull(Serializable image)
+      throws IllegalArgumentException {
 
-	/**
-	 * @methodtype assert
-	 */
-	protected void assertImageNotNull(Serializable image)
-			throws IllegalArgumentException {
+    if (image == null) {
+      throw new IllegalArgumentException("Image is null!");
+    }
+  }
 
-		if (image == null) {
-			throw new IllegalArgumentException("Image is null!");
-		}
-	}
+  /**
+   * @methodtype assert
+   */
+  protected void assertValidPhotoId(String photoId)
+      throws IllegalArgumentException {
 
-	/**
-	 * @methodtype assert
-	 */
-	protected void assertValidPhotoId(String photoId)
-			throws IllegalArgumentException {
-
-		if (photoId == null || "".equals(photoId)) {
-			throw new IllegalArgumentException("Invalid photoId:" + photoId);
-		}
-	}
+    if (photoId == null || "".equals(photoId)) {
+      throw new IllegalArgumentException("Invalid photoId:" + photoId);
+    }
+  }
 }

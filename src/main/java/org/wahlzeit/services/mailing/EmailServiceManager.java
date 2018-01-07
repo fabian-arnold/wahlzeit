@@ -27,64 +27,63 @@ import org.wahlzeit.main.ServiceMain;
  */
 public class EmailServiceManager {
 
-	/**
-	 *
-	 */
-	protected static EmailServiceManager instance = null;
+  /**
+   *
+   */
+  protected static EmailServiceManager instance = null;
+  /**
+   *
+   */
+  protected EmailService defaultService = null;
 
-	/**
-	 *
-	 */
-	protected static synchronized EmailServiceManager getInstance() {
-		if (instance == null) {
-			setInstance(new EmailServiceManager());
-		}
-		return instance;
-	}
+  /**
+   *
+   */
+  protected EmailServiceManager() {
+    initDefaultService();
+  }
 
-	/**
-	 *
-	 */
-	protected static void setInstance(EmailServiceManager manager) {
-		instance = manager;
-	}
+  /**
+   *
+   */
+  protected static synchronized EmailServiceManager getInstance() {
+    if (instance == null) {
+      setInstance(new EmailServiceManager());
+    }
+    return instance;
+  }
 
-	/**
-	 *
-	 */
-	public static EmailService getDefaultService() {
-		return getInstance().doGetDefaultService();
-	}
+  /**
+   *
+   */
+  protected static void setInstance(EmailServiceManager manager) {
+    instance = manager;
+  }
 
-	/**
-	 *
-	 */
-	protected EmailService defaultService = null;
+  /**
+   *
+   */
+  public static EmailService getDefaultService() {
+    return getInstance().doGetDefaultService();
+  }
 
-	/**
-	 *
-	 */
-	protected EmailServiceManager() {
-		initDefaultService();
-	}
+  /**
+   *
+   */
+  protected void initDefaultService() {
+    boolean isInProduction = ServiceMain.getInstance().isInProduction();
+    if (isInProduction) {
+      defaultService = new SmtpEmailService();
+    } else {
+      defaultService = new LoggingEmailService(new MockEmailService());
+    }
+  }
 
-	/**
-	 *
-	 */
-	protected void initDefaultService() {
-		boolean isInProduction = ServiceMain.getInstance().isInProduction();
-		if (isInProduction) {
-			defaultService = new SmtpEmailService();
-		} else {
-			defaultService = new LoggingEmailService(new MockEmailService());
-		}
-	}
-
-	/**
-	 *
-	 */
-	protected EmailService doGetDefaultService() {
-		return defaultService;
-	}
+  /**
+   *
+   */
+  protected EmailService doGetDefaultService() {
+    return defaultService;
+  }
 
 }

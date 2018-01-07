@@ -20,9 +20,6 @@
 
 package org.wahlzeit.model;
 
-import org.wahlzeit.services.LogBuilder;
-import org.wahlzeit.utils.StringUtil;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,250 +27,253 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
+import org.wahlzeit.services.LogBuilder;
+import org.wahlzeit.utils.StringUtil;
+import org.wahlzeit.utils.doc.DesignPattern;
+import org.wahlzeit.utils.doc.pattern.PatternType;
 
 /**
  * A class to specify a photo filter.
  * A photo filter captures selection ("filtering") criteria for photos.
  */
+@DesignPattern(value = PatternType.FILTER, participants = Photo.class)
 public class PhotoFilter implements Serializable {
 
-	private static Logger log = Logger.getLogger(PhotoFilter.class.getName());
+  /**
+   *
+   */
+  public static final String USER_NAME = "userName";
+  public static final String TAGS = "tags";
+  private static Logger log = Logger.getLogger(PhotoFilter.class.getName());
+  /**
+   *
+   */
+  protected String userName = "";
+  protected Tags tags = Tags.EMPTY_TAGS;
 
-	/**
-	 *
-	 */
-	public static final String USER_NAME = "userName";
-	public static final String TAGS = "tags";
+  /**
+   *
+   */
+  protected List<PhotoId> displayablePhotoIds;
+  protected List<PhotoId> processedPhotoIds = new LinkedList<PhotoId>();
+  protected List<PhotoId> skippedPhotoIds = new LinkedList<PhotoId>();
 
-	/**
-	 *
-	 */
-	protected String userName = "";
-	protected Tags tags = Tags.EMPTY_TAGS;
+  /**
+   *
+   */
+  protected Random randomNumber = new Random(System.currentTimeMillis());
 
-	/**
-	 *
-	 */
-	protected List<PhotoId> displayablePhotoIds;
-	protected List<PhotoId> processedPhotoIds = new LinkedList<PhotoId>();
-	protected List<PhotoId> skippedPhotoIds = new LinkedList<PhotoId>();
+  /**
+   *
+   */
+  public PhotoFilter() {
+    resetDisplayablePhotoIds();
+  }
 
-	/**
-	 *
-	 */
-	protected Random randomNumber = new Random(System.currentTimeMillis());
+  /**
+   *
+   */
+  public String getUserName() {
+    return userName;
+  }
 
-	/**
-	 *
-	 */
-	public PhotoFilter() {
-		resetDisplayablePhotoIds();
-	}
+  /**
+   *
+   */
+  public void setUserName(String newUserName) {
+    userName = newUserName;
+    resetDisplayablePhotoIds();
+  }
 
-	/**
-	 *
-	 */
-	public String getUserName() {
-		return userName;
-	}
+  /**
+   *
+   */
+  public void clear() {
+    setUserName("");
+    setTags(Tags.EMPTY_TAGS);
+    displayablePhotoIds.clear();
+    processedPhotoIds.clear();
+  }
 
-	/**
-	 *
-	 */
-	public void clear() {
-		setUserName("");
-		setTags(Tags.EMPTY_TAGS);
-		displayablePhotoIds.clear();
-		processedPhotoIds.clear();
-	}
+  /**
+   *
+   */
+  public Tags getTags() {
+    return tags;
+  }
 
-	/**
-	 *
-	 */
-	public void setUserName(String newUserName) {
-		userName = newUserName;
-		resetDisplayablePhotoIds();
-	}
+  /**
+   *
+   */
+  public void setTags(Tags newTags) {
+    tags = newTags;
+    resetDisplayablePhotoIds();
+  }
 
-	/**
-	 *
-	 */
-	public Tags getTags() {
-		return tags;
-	}
+  /**
+   *
+   */
+  public List<String> getFilterConditions() {
+    List<String> filterConditions = new ArrayList<String>();
 
-	/**
-	 *
-	 */
-	public void setTags(Tags newTags) {
-		tags = newTags;
-		resetDisplayablePhotoIds();
-	}
+    collectFilterConditions(filterConditions);
 
-	/**
-	 *
-	 */
-	public List<String> getFilterConditions() {
-		List<String> filterConditions = new ArrayList<String>();
+    return filterConditions;
+  }
 
-		collectFilterConditions(filterConditions);
+  /**
+   *
+   */
+  protected void collectFilterConditions(List<String> filterConditions) {
+    String un = getUserName();
+    if (!StringUtil.isNullOrEmptyString(un)) {
+      filterConditions.add("un:" + Tags.asTag(un));
+    }
 
-		return filterConditions;
-	}
+    String[] tags = getTags().asArray();
+    for (int i = 0; i < tags.length; i++) {
+      filterConditions.add("tg:" + tags[i]);
+    }
+  }
 
-	/**
-	 *
-	 */
-	protected void collectFilterConditions(List<String> filterConditions) {
-		String un = getUserName();
-		if (!StringUtil.isNullOrEmptyString(un)) {
-			filterConditions.add("un:" + Tags.asTag(un));
-		}
+  /**
+   * @methodtype command
+   */
+  public void generateDisplayablePhotoIds() {
+    displayablePhotoIds = getFilteredPhotoIds();
+  }
 
-		String[] tags = getTags().asArray();
-		for (int i = 0; i < tags.length; i++) {
-			filterConditions.add("tg:" + tags[i]);
-		}
-	}
+  /**
+   * Get a random photo that has not been rated. If possible avoid skipped photos.
+   */
+  public PhotoId getRandomDisplayablePhotoId() {
+    if (!displayablePhotoIds.isEmpty()) {
+      int size = displayablePhotoIds.size();
+      int index = ((randomNumber.nextInt() % size) + size) / 2;
+      return displayablePhotoIds.get(index);
+    } else {
+      return PhotoId.NULL_ID;
+    }
+  }
 
-	/**
-	 * @methodtype command
-	 */
-	public void generateDisplayablePhotoIds() {
-		displayablePhotoIds = getFilteredPhotoIds();
-	}
+  /**
+   *
+   */
+  public List<PhotoId> getDisplayablePhotoIds() {
+    return displayablePhotoIds;
+  }
 
-	/**
-	 * Get a random photo that has not been rated. If possible avoid skipped photos.
-	 */
-	public PhotoId getRandomDisplayablePhotoId() {
-		if (!displayablePhotoIds.isEmpty()) {
-			int size = displayablePhotoIds.size();
-			int index = ((randomNumber.nextInt() % size) + size) / 2;
-			return displayablePhotoIds.get(index);
-		} else {
-			return PhotoId.NULL_ID;
-		}
-	}
+  /**
+   *
+   */
+  public void setDisplayablePhotoIds(List<PhotoId> newPhotoIds) {
+    displayablePhotoIds = newPhotoIds;
+  }
 
-	/**
-	 *
-	 */
-	public List<PhotoId> getDisplayablePhotoIds() {
-		return displayablePhotoIds;
-	}
+  /**
+   *
+   */
+  public void resetDisplayablePhotoIds() {
+    displayablePhotoIds = new ArrayList<PhotoId>();
+  }
 
-	/**
-	 *
-	 */
-	public void setDisplayablePhotoIds(List<PhotoId> newPhotoIds) {
-		displayablePhotoIds = newPhotoIds;
-	}
+  /**
+   *
+   */
+  public List<PhotoId> getProcessedPhotoIds() {
+    return processedPhotoIds;
+  }
 
-	/**
-	 *
-	 */
-	public void resetDisplayablePhotoIds() {
-		displayablePhotoIds = new ArrayList<PhotoId>();
-	}
+  /**
+   *
+   */
+  public boolean isProcessedPhotoId(PhotoId photoId) {
+    log.info("photoId: " + photoId.asString());
+    for (PhotoId id : processedPhotoIds) {
+      log.info("Processed id: " + id.asString());
+    }
+    return processedPhotoIds.contains(photoId);
+  }
 
-	/**
-	 *
-	 */
-	public List<PhotoId> getProcessedPhotoIds() {
-		return processedPhotoIds;
-	}
-
-	/**
-	 *
-	 */
-	public boolean isProcessedPhotoId(PhotoId photoId) {
-		log.info("photoId: " + photoId.asString());
-		for (PhotoId id : processedPhotoIds) {
-			log.info("Processed id: " + id.asString());
-		}
-		return processedPhotoIds.contains(photoId);
-	}
-
-	/**
-	 *
-	 */
-	public void addProcessedPhoto(Photo photo) {
-		PhotoId photoId = photo.getId();
-		processedPhotoIds.add(photoId);
-		skippedPhotoIds.remove(photoId);
-		if (displayablePhotoIds != null) {
-			displayablePhotoIds.remove(photoId);
-		}
-	}
+  /**
+   *
+   */
+  public void addProcessedPhoto(Photo photo) {
+    PhotoId photoId = photo.getId();
+    processedPhotoIds.add(photoId);
+    skippedPhotoIds.remove(photoId);
+    if (displayablePhotoIds != null) {
+      displayablePhotoIds.remove(photoId);
+    }
+  }
 
 
-	/**
-	 * @methodtype get
-	 */
-	public List<PhotoId> getSkippedPhotoIds() {
-		return skippedPhotoIds;
-	}
+  /**
+   * @methodtype get
+   */
+  public List<PhotoId> getSkippedPhotoIds() {
+    return skippedPhotoIds;
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void setSkippedPhotoIds(List<PhotoId> skippedPhotoIds) {
-		this.skippedPhotoIds = skippedPhotoIds;
-	}
+  /**
+   * @methodtype set
+   */
+  public void setSkippedPhotoIds(List<PhotoId> skippedPhotoIds) {
+    this.skippedPhotoIds = skippedPhotoIds;
+  }
 
-	/**
-	 * @methodtype set
-	 */
-	public void addSkippedPhotoId(PhotoId skippedPhotoId) {
-		if (!skippedPhotoIds.contains(skippedPhotoId)) {
-			skippedPhotoIds.add(skippedPhotoId);
-		}
-	}
+  /**
+   * @methodtype set
+   */
+  public void addSkippedPhotoId(PhotoId skippedPhotoId) {
+    if (!skippedPhotoIds.contains(skippedPhotoId)) {
+      skippedPhotoIds.add(skippedPhotoId);
+    }
+  }
 
-	/**
-	 *
-	 */
-	protected List<PhotoId> getFilteredPhotoIds() {
-		// get all tags that match the filter conditions
-		List<PhotoId> result = new LinkedList<PhotoId>();
-		int noFilterConditions = getFilterConditions().size();
-		log.config(LogBuilder.createSystemMessage().
-				addParameter("Number of filter conditions", String.valueOf(noFilterConditions)).toString());
+  /**
+   *
+   */
+  protected List<PhotoId> getFilteredPhotoIds() {
+    // get all tags that match the filter conditions
+    List<PhotoId> result = new LinkedList<PhotoId>();
+    int noFilterConditions = getFilterConditions().size();
+    log.config(LogBuilder.createSystemMessage().
+        addParameter("Number of filter conditions", String.valueOf(noFilterConditions)).toString());
 
-		Collection<PhotoId> candidates;
-		if (noFilterConditions == 0) {
-			candidates = PhotoManager.getInstance().getPhotoCache().keySet();
-		} else {
-			List<Tag> tags = new LinkedList<Tag>();
-			candidates = new LinkedList<PhotoId>();
-			for (String condition : getFilterConditions()) {
-				PhotoManager.getInstance().addTagsThatMatchCondition(tags, condition);
-			}
-			// get the list of all photo ids that correspond to the tags
-			for (Tag tag : tags) {
-				candidates.add(PhotoId.getIdFromString(tag.getPhotoId()));
-			}
-		}
+    Collection<PhotoId> candidates;
+    if (noFilterConditions == 0) {
+      candidates = PhotoManager.getInstance().getPhotoCache().keySet();
+    } else {
+      List<Tag> tags = new LinkedList<Tag>();
+      candidates = new LinkedList<PhotoId>();
+      for (String condition : getFilterConditions()) {
+        PhotoManager.getInstance().addTagsThatMatchCondition(tags, condition);
+      }
+      // get the list of all photo ids that correspond to the tags
+      for (Tag tag : tags) {
+        candidates.add(PhotoId.getIdFromString(tag.getPhotoId()));
+      }
+    }
 
-		int newPhotos = 0;
-		for (PhotoId candidateId : candidates) {
-			Photo photoCandidate = PhotoManager.getInstance().getPhoto(candidateId);
-			if (!processedPhotoIds.contains(candidateId) && !skippedPhotoIds.contains(candidateId) &&
-					photoCandidate.isVisible()) {
-				result.add(candidateId);
-				++newPhotos;
-			}
-		}
-		int skippedPhotos = skippedPhotoIds.size();
-		if (newPhotos == 0 && skippedPhotos > 0) {
-			result.addAll(skippedPhotoIds);
-			newPhotos = skippedPhotos;
-		}
+    int newPhotos = 0;
+    for (PhotoId candidateId : candidates) {
+      Photo photoCandidate = PhotoManager.getInstance().getPhoto(candidateId);
+      if (!processedPhotoIds.contains(candidateId) && !skippedPhotoIds.contains(candidateId) &&
+          photoCandidate.isVisible()) {
+        result.add(candidateId);
+        ++newPhotos;
+      }
+    }
+    int skippedPhotos = skippedPhotoIds.size();
+    if (newPhotos == 0 && skippedPhotos > 0) {
+      result.addAll(skippedPhotoIds);
+      newPhotos = skippedPhotos;
+    }
 
-		log.config(LogBuilder.createSystemMessage().addParameter("Number of photos to show", newPhotos)
-				.toString());
+    log.config(LogBuilder.createSystemMessage().addParameter("Number of photos to show", newPhotos)
+        .toString());
 
-		return result;
-	}
+    return result;
+  }
 }

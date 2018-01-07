@@ -20,10 +20,9 @@
 
 package org.wahlzeit.handlers;
 
+import java.util.Map;
 import org.wahlzeit.model.UserSession;
 import org.wahlzeit.webparts.WebPart;
-
-import java.util.Map;
 
 
 /**
@@ -31,14 +30,14 @@ import java.util.Map;
  */
 public interface WebPartHandler {
 
-	/**
-	 *
-	 */
-	WebPart makeWebPart(UserSession us);
+  /**
+   *
+   */
+  WebPart makeWebPart(UserSession us);
 
-	/**
-	 *
-	 */
-	String handleGet(UserSession us, String link, Map args);
+  /**
+   *
+   */
+  String handleGet(UserSession us, String link, Map args);
 
 }

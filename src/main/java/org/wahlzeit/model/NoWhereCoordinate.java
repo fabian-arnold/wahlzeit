@@ -27,37 +27,39 @@ package org.wahlzeit.model;
 public class NoWhereCoordinate extends AbstractCoordinate {
 
 
-    private static final NoWhereCoordinate INSTANCE = new NoWhereCoordinate();
+  private static final NoWhereCoordinate INSTANCE = new NoWhereCoordinate();
 
-    /**
-     * Creates a new no where coordinate
-     */
-    private NoWhereCoordinate() {
+  /**
+   * Creates a new no where coordinate
+   */
+  private NoWhereCoordinate() {
 
-    }
+  }
 
   /**
    * Creates a no where coordinate
+   *
    * @return a no where coordinate
    */
-    public static NoWhereCoordinate create(){
-        return INSTANCE;
-    }
+  public static NoWhereCoordinate create() {
+    return INSTANCE;
+  }
 
-    /**
-     * Calculates the distance to target.
-     * Returns always the positive infinity
-     * @param target The target the distance to is calculated
-     */
-    @Override
-    public double getDistance(Coordinate target) {
-        // nowhere is infinite far away we could use the implementation
-        // of the base class but this gives more performance
-        return Double.POSITIVE_INFINITY;
-    }
+  /**
+   * Calculates the distance to target.
+   * Returns always the positive infinity
+   *
+   * @param target The target the distance to is calculated
+   */
+  @Override
+  public double getDistance(Coordinate target) {
+    // nowhere is infinite far away we could use the implementation
+    // of the base class but this gives more performance
+    return Double.POSITIVE_INFINITY;
+  }
 
-    @Override
-    public String toString() {
-        return "NoWhereCoordinate{}";
-    }
+  @Override
+  public String toString() {
+    return "NoWhereCoordinate{}";
+  }
 }

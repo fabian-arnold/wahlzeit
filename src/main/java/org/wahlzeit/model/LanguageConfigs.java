@@ -20,10 +20,9 @@
 
 package org.wahlzeit.model;
 
-import org.wahlzeit.services.Language;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.wahlzeit.services.Language;
 
 /**
  * LanguageConfigs provides a simple access points to different language-based configurations. For every available
@@ -32,23 +31,23 @@ import java.util.Map;
 
 public class LanguageConfigs {
 
-	/**
-	 *
-	 */
-	protected static Map<Language, ModelConfig> configurations = new HashMap<Language, ModelConfig>();
+  /**
+   *
+   */
+  protected static Map<Language, ModelConfig> configurations = new HashMap<Language, ModelConfig>();
 
-	/**
-	 *
-	 */
-	public static ModelConfig get(Language language) {
-		return configurations.get(language);
-	}
+  /**
+   *
+   */
+  public static ModelConfig get(Language language) {
+    return configurations.get(language);
+  }
 
-	/**
-	 *
-	 */
-	public static void put(Language language, ModelConfig config) {
-		configurations.put(language, config);
-	}
+  /**
+   *
+   */
+  public static void put(Language language, ModelConfig config) {
+    configurations.put(language, config);
+  }
 
 }

@@ -24,7 +24,11 @@ package org.wahlzeit.model;
 import java.util.logging.Logger;
 import org.wahlzeit.services.LogBuilder;
 import org.wahlzeit.utils.ParameterUtil;
+import org.wahlzeit.utils.doc.DesignPattern;
+import org.wahlzeit.utils.doc.pattern.PatternType;
 
+@DesignPattern(value = {PatternType.FACTORY,
+    PatternType.SINGLETON}, participants = CheesefoodPhoto.class)
 public class CheesefoodPhotoFactory extends PhotoFactory {
 
   private static final Logger log = Logger.getLogger(CheesefoodPhotoFactory.class.getName());
