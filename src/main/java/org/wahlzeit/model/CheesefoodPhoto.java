@@ -22,6 +22,7 @@
 package org.wahlzeit.model;
 
 import com.googlecode.objectify.annotation.Subclass;
+import java.util.List;
 
 @Subclass()
 public class CheesefoodPhoto extends Photo {
@@ -45,7 +46,11 @@ public class CheesefoodPhoto extends Photo {
   protected Boolean stoveNeeded;
 
   // Stores which type of cheese is used (Emmentaler, Gauda, usw) seperated by a comma
+  @Deprecated
   protected String cheeseType;
+
+  // Stores the cheeses which are used
+  protected List<Cheese> cheeses;
 
   /**
    * Creates a new cheesefood photo
@@ -204,6 +209,7 @@ public class CheesefoodPhoto extends Photo {
    * @return the type(s) of cheese
    * @methodtype get
    */
+  @Deprecated
   public String getCheeseType() {
     return cheeseType;
   }
@@ -215,7 +221,22 @@ public class CheesefoodPhoto extends Photo {
    * @param cheeseType the type(s) of cheese
    * @methodtype set
    */
+  @Deprecated
   public void setCheeseType(String cheeseType) {
     this.cheeseType = cheeseType;
+  }
+
+  /**
+   * Returns a List of all used cheeses
+   */
+  public List<Cheese> getCheeses() {
+    return cheeses;
+  }
+
+  /**
+   * Sets the list of all used cheeses
+   */
+  public void setCheeses(List<Cheese> cheeses) {
+    this.cheeses = cheeses;
   }
 }
