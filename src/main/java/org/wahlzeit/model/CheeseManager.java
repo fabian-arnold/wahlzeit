@@ -26,9 +26,14 @@ public class CheeseManager {
   public CheeseType getCheeseType(String origin, String name) {
     ParameterUtil.assertNotNull(name, "Name");
     ParameterUtil.assertNotNull(origin, "Origin");
-    CheeseType type = new CheeseType(origin, name);
-    types.putIfAbsent(name, type);
-    return type;
+
+    if(!types.containsKey(name)) {
+      CheeseType type = new CheeseType(origin, name);
+      types.put(name, type);
+      return type;
+    }else{
+      return types.get(name);
+    }
   }
 
   /**

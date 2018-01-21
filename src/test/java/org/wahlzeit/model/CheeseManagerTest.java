@@ -20,6 +20,14 @@ public class CheeseManagerTest {
     assertEquals((long) cheese.getAge(), 20);
     assertEquals((long) cheese.getAmount(), 10);
     assertEquals(cheese.getCheeseType(), child);
+
+    CheeseType ct0 = CheeseManager.getInstance().getCheeseType("abc");
+
+    CheeseType ct1 = CheeseManager.getInstance().getCheeseType("abc");
+    assertEquals(ct1, ct0);
+
+
+
   }
 
 }
